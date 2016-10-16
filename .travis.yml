@@ -1,0 +1,11 @@
+language: java
+
+# only java 8 supported for now
+jdk: oraclejdk8
+
+# list dependencies in the install step.
+# this forces the check that all dependencies are available
+install: gradle dependencies
+
+# run unit tests in main script
+script: gradle test
