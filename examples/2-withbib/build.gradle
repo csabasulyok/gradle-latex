@@ -14,10 +14,6 @@ buildscript {
 apply plugin: 'latex'
 
 latex {
-
-    // creates document.pdf from document.tex
-    tex 'document.tex'
-
-    // custom file name
-    tex(tex:'document.tex', pdf:'customOutput')
+    // connect document to bib file
+    tex(tex: 'document.tex', bib: 'references.bib', pdf: 'output.pdf')
 }
