@@ -1,5 +1,23 @@
-apply plugin: LatexPlugin
+// include latex plugin on classpath
+
+buildscript {
+    repositories {
+        mavenLocal()
+		mavenCentral()
+    }
+    dependencies {
+        classpath group: 'org.gradlelatex', name: 'gradle-latex', version: '1.0-SNAPSHOT'
+    }
+}
+
+
+apply plugin: 'latex'
 
 latex {
+
+    // creates document.pdf from document.tex
     tex 'document.tex'
+
+    // custom file name
+    tex(tex:'document.tex', pdf:'customOutput')
 }
