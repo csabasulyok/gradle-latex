@@ -25,6 +25,13 @@ repositories {
     mavenCentral()
 }
 
+// print test report (for Travis) 
+test {
+    afterTest { desc, result ->
+        println "  Test ${desc.className}.${desc.name} - ${result.resultType}"
+    }
+}
+
 // extra eclipse setup
 eclipse {
     // do not hardcode Maven repo in project file
