@@ -20,7 +20,7 @@ class LatexPluginTest {
   public void apply_addsTasks() {
     // adds 3 necessary tasks
     assertNotNull(p.tasks.bibTex)
-    assertTrue(p.tasks.bibTex instanceof BibTexTask)
+    assertTrue(p.tasks.bibTex instanceof PdfLatexTask)
     assertNotNull(p.tasks.pdfLatex)
     assertTrue(p.tasks.pdfLatex instanceof PdfLatexTask)
     assertNotNull(p.tasks.cleanLatex)
