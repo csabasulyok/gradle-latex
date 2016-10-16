@@ -1,0 +1,5 @@
+apply plugin: LatexPlugin
+
+latex {
+    tex 'document.tex'
+}
