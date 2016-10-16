@@ -1,0 +1,188 @@
+class LatexObj {
+    File tex
+    File bib
+    File pdf
+    List<String> dependsOn
+    FileCollection aux
+}
+
+/**
+ * Gradle extension to hold all latex-file-related data.
+ */
+class LatexExtension {
+    final Project p
+    final File auxDir
+
+    boolean quiet = true
+    boolean cleanTemp = false
+
+    private LinkedHashMap<String, LatexObj> objs = [:]
+
+    LatexExtension(Project p) {
+        this.p = p;
+        this.auxDir = new File('.gradle/latex-temp')
+    }
+
+    void tex(String texName) {
+        tex([tex: texName])
+    }
+
+    void tex(Map args) {
+        objs[args.tex] = new LatexObj()
+        objs[args.tex].tex = new File(args.tex)
+        objs[args.tex].pdf = new File(args.pdf ?: args.tex.take(args.tex.lastIndexOf('.')))
+        objs[args.tex].bib = args.bib ? new File(args.bib) : null
+        objs[args.tex].dependsOn = args.dependsOn
+        objs[args.tex].aux = args.aux ? p.files(args.aux) : null
+    }
+
+    LinkedHashMap<String, LatexObj> withBib() {
+        return objs.findAll { tex, obj -> obj.bib }
+    }
+
+    FileCollection getTexInputs() {
+        p.files(objs.collect { tex, obj -> obj.tex })
+    }
+
+    FileCollection getBibInputs() {
+        p.files(withBib().collect { tex, obj -> obj.bib })
+    }
+
+    void withRecursive(def touched, String tex, Closure closure) {
+        if (!touched.contains(tex)) {
+            objs[tex].dependsOn.each { dependentTex ->
+                withRecursive(touched, dependentTex, closure)
+            }
+            objs[tex].with(closure)
+            touched << tex
+        }
+    }
+
+    void withRecursive(String tex, Closure closure) {
+        objs[tex].dependsOn.each { dependentTex ->
+            withRecursive(dependentTex, closure)
+        }
+        objs[tex].with(closure)
+    }
+
+    void eachObj(Closure closure) {
+        def touched = []
+        objs.each { tex, obj ->
+            withRecursive(touched, tex, closure)
+        }
+    }
+}
+
+
+/**
+ * Gradle task to run pdflatex on a TeX file
+ */
+class PdfLatexTask extends DefaultTask {
+    final String group = 'Latex'
+    final String description = 'Runs pdflatex on given tex file (default: document.tex)'
+
+    @InputFiles
+    FileCollection getInputFiles() {
+        project.latex.texInputs
+    }
+
+    @TaskAction
+    void pdfLatex() {
+        project.latex.eachObj { obj ->
+            project.ext.exec "pdflatex -aux-directory=${project.latex.auxDir} -job-name=${obj.pdf} ${project.latex.quiet?'-quiet':''} ${obj.tex}"
+            project.ext.exec "pdflatex -aux-directory=${project.latex.auxDir} -job-name=${obj.pdf} ${project.latex.quiet?'-quiet':''} ${obj.tex}"
+        }
+    }
+}
+
+
+/**
+ * Gradle task to run bibTex on an aux file
+ */
+class BibTexTask extends DefaultTask {
+    final String group = 'Latex'
+    final String description = 'Runs bibtex on all *.bib files in project'
+
+    @InputFiles
+    FileCollection getInputFiles() {
+        project.latex.bibInputs
+    }
+
+    @TaskAction
+    void bibtex() {
+        project.latex.withBib().each { tex, obj ->
+            project.latex.withRecursive(tex) { subObj ->
+                project.ext.exec "pdflatex -aux-directory=${project.latex.auxDir} -job-name=${subObj.pdf} ${project.latex.quiet?'-quiet':''} ${subObj.tex}"
+            }
+            project.ext.exec "bibtex ${project.latex.quiet?'-quiet':''} ${project.latex.auxDir}/${obj.pdf}"
+        }
+    }
+}
+
+
+/**
+ * Clean task for LaTeX
+ */
+class CleanLatexTask extends DefaultTask {
+    final String group = 'Latex'
+    final String description = 'Cleans all latex-related files in project'
+
+    @TaskAction
+    void clean() {
+        if (project.latex.cleanTemp) {
+            project.ext.exec "rm -rf ${project.latex.auxDir}/*"
+        }
+        project.latex.eachObj { obj ->
+            project.ext.exec "rm ${obj.pdf}.pdf"
+        }
+    }
+}
+
+
+/**
+ * Main Gradle plugin for LaTeX tasks.
+ */
+class LatexPlugin implements Plugin<Project> {
+
+    void apply(Project p) {
+        // extension
+        p.extensions.create('latex', LatexExtension, p)
+
+        // create temp folder if necessary
+        p.file(p.latex.auxDir).mkdirs()
+
+        // tasks
+        p.task('bibTex', type: BibTexTask).onlyIf { task -> p.latex.bibInputs }
+        p.task('pdfLatex', type: PdfLatexTask, dependsOn: 'bibTex')
+        p.task('cleanLatex', type: CleanLatexTask)
+
+        // pdflatex becomes the default task
+        p.defaultTasks 'pdfLatex'
+
+        // add helper method to execute
+        p.ext.exec = { cmd ->
+            println "Executing $cmd"
+            def cmdSplit = cmd.split(' ')
+            p.ant.exec(executable: cmdSplit[0], dir: p.projectDir) {
+                cmdSplit[1..-1].each { argv ->
+                    arg(value: argv)
+                }
+            }
+        }
+    }
+
+}
+
+// customization
+
+apply plugin: LatexPlugin
+
+latex {
+    tex 'dependent.tex'
+    tex(tex: 'document.tex',
+        bib: 'references.bib',
+        dependsOn: ['dependent.tex'],
+        aux: ['auxiliary.tex'])
+
+    cleanTemp = true
+}
