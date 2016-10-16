@@ -1,2 +1,15 @@
+# pdf files
 *.pdf
+
+# resources from gradle
 .gradle
+/build
+
+# resources from eclipse
+/bin
+/.settings
+/.classpath
+/.project
+
+# resources from VS Code
+/.vscode

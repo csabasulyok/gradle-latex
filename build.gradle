@@ -1,0 +1,33 @@
+// project is Maven-style
+apply plugin: 'java'
+apply plugin: 'groovy'
+apply plugin: 'maven'
+
+// eclipse project generation support
+apply plugin: 'eclipse'
+
+// identifiers
+group = 'org.gradlelatex'
+version = '1.0-SNAPSHOT'
+
+// JUnit and logger dependency
+dependencies {
+    compile group:'ch.qos.logback', name:'logback-classic', version:'1.0.13'
+    compile gradleApi()
+    compile localGroovy()
+}
+
+// don't fail the build if tests are failing
+tasks.test.ignoreFailures = true
+
+// use main Maven repos
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+// extra eclipse setup
+eclipse {
+    // do not hardcode Maven repo in project file
+    pathVariables 'M2_REPO': file(repositories[0].url)
+}
