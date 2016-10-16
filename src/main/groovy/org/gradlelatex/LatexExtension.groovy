@@ -19,6 +19,8 @@ class LatexExtension {
   LatexExtension(Project p) {
     this.p = p
     this.utils = new LatexUtils(p)
+
+    this.auxDir.mkdirs()
   }
 
   void tex(String texName) {

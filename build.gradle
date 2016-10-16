@@ -10,11 +10,13 @@ apply plugin: 'eclipse'
 group = 'org.gradlelatex'
 version = '1.0-SNAPSHOT'
 
-// JUnit and logger dependency
 dependencies {
-    compile group:'ch.qos.logback', name:'logback-classic', version:'1.0.13'
+    // make this a gradle plugin project
     compile gradleApi()
     compile localGroovy()
+
+    // testing
+    testCompile group:'junit', name:'junit', version:'4.12'
 }
 
 // don't fail the build if tests are failing

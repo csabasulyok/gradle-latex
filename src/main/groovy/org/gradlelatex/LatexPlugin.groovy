@@ -12,9 +12,6 @@ class LatexPlugin implements Plugin<Project> {
     // extension
     p.extensions.create('latex', LatexExtension, p)
 
-    // create temp folder if necessary
-    p.file(p.latex.auxDir).mkdirs()
-
     // tasks
     p.task('bibTex', type: BibTexTask).onlyIf { task -> p.latex.bibInputs }
     p.task('pdfLatex', type: PdfLatexTask, dependsOn: 'bibTex')
