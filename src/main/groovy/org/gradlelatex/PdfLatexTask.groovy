@@ -29,7 +29,7 @@ class PdfLatexTask extends DefaultTask {
   void setProps(LatexObj obj) {
     tex = obj.tex
     pdf = obj.pdf
-    inputFiles = project.files(tex, obj.aux)
+    inputFiles = project.files([tex, obj.dependsOn.collect { it.pdf }, obj.aux].flatten() - null)
     jobName = pdf.name.take(pdf.name.lastIndexOf('.'))
   }
 }

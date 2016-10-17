@@ -16,7 +16,7 @@ class LatexUtils {
   void exec(String cmd) {
     LOG.quiet "Executing $cmd"
     def cmdSplit = cmd.split(' ')
-    p.ant.exec(executable: cmdSplit[0], dir: p.projectDir) {
+    p.ant.exec(executable: cmdSplit[0], dir: p.projectDir, failonerror: true) {
       cmdSplit[1..-1].each { argv ->
         arg(value: argv)
       }
