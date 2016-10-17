@@ -23,8 +23,8 @@ class PdfLatexTask extends DefaultTask {
 
   @TaskAction
   void pdfLatex() {
-    project.latex.utils.exec "pdflatex -aux-directory=${project.latex.auxDir} -job-name=${obj.jobName} ${project.latex.quiet?'-quiet':''} ${obj.tex}"
-    project.latex.utils.exec "pdflatex -aux-directory=${project.latex.auxDir} -job-name=${obj.jobName} ${project.latex.quiet?'-quiet':''} ${obj.tex}"
+    project.latex.utils.pdfLatex(obj)
+    project.latex.utils.pdfLatex(obj)
   }
 
   void setObj(LatexObj obj) {

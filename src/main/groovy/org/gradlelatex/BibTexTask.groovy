@@ -23,9 +23,9 @@ class BibTexTask extends DefaultTask {
   @TaskAction
   void bibtex() {
     project.latex.with(obj.name) { LatexObj subObj ->
-      project.latex.utils.exec "pdflatex -aux-directory=${project.latex.auxDir} -job-name=${subObj.jobName} ${project.latex.quiet?'-quiet':''} ${subObj.tex}"
+      project.latex.utils.pdfLatex(subObj)
     }
-    project.latex.utils.exec "bibtex ${project.latex.quiet?'-quiet':''} ${project.latex.auxDir}/${obj.jobName}"
+    project.latex.utils.bibTex(obj)
   }
 
   void setObj(LatexObj obj) {

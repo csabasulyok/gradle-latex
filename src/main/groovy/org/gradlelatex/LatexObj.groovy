@@ -10,6 +10,7 @@ class LatexObj {
   File pdf
   List<LatexObj> dependsOn
   FileCollection aux
+  String extraArgs = ''
 
   String getJobName() {
     pdf.name.take(pdf.name.lastIndexOf('.'))

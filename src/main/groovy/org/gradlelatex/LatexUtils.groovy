@@ -6,7 +6,7 @@ import org.slf4j.LoggerFactory
 
 class LatexUtils {
   Logger LOG = LoggerFactory.getLogger(LatexUtils)
-  
+
   final Project p
 
   LatexUtils(Project p) {
@@ -22,7 +22,15 @@ class LatexUtils {
       }
     }
   }
-  
+
+  void pdfLatex(LatexObj obj) {
+    exec "pdflatex -aux-directory=${p.latex.auxDir} -job-name=${obj.jobName} ${p.latex.quiet?'-quiet':''} ${obj.tex}"
+  }
+
+  void bibTex(LatexObj obj) {
+    exec "bibtex ${p.latex.quiet?'-quiet':''} ${p.latex.auxDir}/${obj.jobName}"
+  }
+
   void emptyContent(File dir) {
     LOG.quiet "Emptying content from folder $dir"
     p.ant.delete {
