@@ -60,7 +60,7 @@ class LatexExtension {
   void addPdfLatexTask(LatexObj obj) {
     LOG.info "Dynamically adding task 'pdfLatex.${obj.name}'"
     PdfLatexTask pdfLatexTask = p.task("pdfLatex.${obj.name}", type: PdfLatexTask, overwrite: true)
-    pdfLatexTask.setProps(obj)
+    pdfLatexTask.setObj(obj)
     obj.dependsOn.each { depObj ->
       PdfLatexTask depPdfLatexTask = p.tasks["pdfLatex.${depObj.name}"]
       pdfLatexTask.dependsOn depPdfLatexTask
@@ -69,14 +69,14 @@ class LatexExtension {
 
     LOG.info "Dynamically adding task 'cleanLatex.${obj.name}'"
     CleanLatexTask cleanLatexTask = p.task("cleanLatex.${obj.name}", type: CleanLatexTask, overwrite: true)
-    cleanLatexTask.setProps(obj)
+    cleanLatexTask.setObj(obj)
     p.tasks["cleanLatex"].dependsOn "cleanLatex.${obj.name}"
   }
 
   void addBibTexTask(LatexObj obj) {
     LOG.info "Dynamically adding task 'bibTex.${obj.name}'"
     BibTexTask bibTexTask = p.task("bibTex.${obj.name}", type: BibTexTask, overwrite: true)
-    bibTexTask.setProps(obj)
+    bibTexTask.setObj(obj)
     p.tasks["pdfLatex.${obj.name}"].dependsOn "bibTex.${obj.name}"
   }
 

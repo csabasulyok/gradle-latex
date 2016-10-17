@@ -22,7 +22,7 @@ class CleanLatexTask extends DefaultTask {
     pdf.delete()
   }
   
-  void setProps(LatexObj obj) {
+  void setObj(LatexObj obj) {
     pdf = obj.pdf
   }
 }

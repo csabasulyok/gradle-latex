@@ -12,33 +12,25 @@ class BibTexTask extends DefaultTask {
   final String group = 'Latex'
   final String description = 'Runs bibtex on all *.bib files in project'
 
-  String objName
-  String jobName
-  
-  File pdf
-  
+  LatexObj obj
+
   @InputFile
   File bib
-  
+
   @OutputFile
   File bbl
-  
-  
+
   @TaskAction
   void bibtex() {
-    project.latex.with(objName) { subObj ->
-      String jobName = subObj.pdf.name.take(subObj.pdf.name.lastIndexOf('.'))
-      project.latex.utils.exec "pdflatex -aux-directory=${project.latex.auxDir} -job-name=${jobName} ${project.latex.quiet?'-quiet':''} ${subObj.tex}"
+    project.latex.with(obj.name) { LatexObj subObj ->
+      project.latex.utils.exec "pdflatex -aux-directory=${project.latex.auxDir} -job-name=${subObj.jobName} ${project.latex.quiet?'-quiet':''} ${subObj.tex}"
     }
-    project.latex.utils.exec "bibtex ${project.latex.quiet?'-quiet':''} ${project.latex.auxDir}/${jobName}"
+    project.latex.utils.exec "bibtex ${project.latex.quiet?'-quiet':''} ${project.latex.auxDir}/${obj.jobName}"
   }
-  
-  void setProps(LatexObj obj) {
-    objName = obj.name
-    pdf = obj.pdf
-    bib = obj.bib
-    
-    jobName = pdf.name.take(pdf.name.lastIndexOf('.'))
-    bbl = new File(project.latex.auxDir, "${jobName}.bbl")
+
+  void setObj(LatexObj obj) {
+    this.obj = obj
+    this.bib = obj.bib
+    this.bbl = new File(project.latex.auxDir, "${obj.jobName}.bbl")
   }
 }

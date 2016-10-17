@@ -13,23 +13,23 @@ class PdfLatexTask extends DefaultTask {
   final String group = 'Latex'
   final String description = 'Runs pdflatex on given tex file (default: document.tex)'
 
-  File tex
+  LatexObj obj
+
   @InputFiles
   FileCollection inputFiles
+
   @OutputFile
   File pdf
-  String jobName
-  
+
   @TaskAction
   void pdfLatex() {
-    project.latex.utils.exec "pdflatex -aux-directory=${project.latex.auxDir} -job-name=${jobName} ${project.latex.quiet?'-quiet':''} ${tex}"
-    project.latex.utils.exec "pdflatex -aux-directory=${project.latex.auxDir} -job-name=${jobName} ${project.latex.quiet?'-quiet':''} ${tex}"
+    project.latex.utils.exec "pdflatex -aux-directory=${project.latex.auxDir} -job-name=${obj.jobName} ${project.latex.quiet?'-quiet':''} ${obj.tex}"
+    project.latex.utils.exec "pdflatex -aux-directory=${project.latex.auxDir} -job-name=${obj.jobName} ${project.latex.quiet?'-quiet':''} ${obj.tex}"
   }
-  
-  void setProps(LatexObj obj) {
-    tex = obj.tex
-    pdf = obj.pdf
-    inputFiles = project.files([tex, obj.dependsOn.collect { it.pdf }, obj.aux].flatten() - null)
-    jobName = pdf.name.take(pdf.name.lastIndexOf('.'))
+
+  void setObj(LatexObj obj) {
+    this.obj = obj
+    this.pdf = obj.pdf
+    this.inputFiles = project.files([obj.tex, obj.dependsOn.collect { it.pdf }, obj.aux].flatten() - null)
   }
 }
