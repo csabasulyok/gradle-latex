@@ -24,7 +24,7 @@ class LatexUtils {
   }
 
   void pdfLatex(LatexObj obj) {
-    exec "pdflatex -aux-directory=${p.latex.auxDir} -job-name=${obj.jobName} ${p.latex.quiet?'-quiet':''} ${obj.tex}"
+    exec "pdflatex -aux-directory=${p.latex.auxDir} -job-name=${obj.jobName} ${p.latex.quiet?'-quiet':''} ${obj.extraArgs} ${obj.tex}"
   }
 
   void bibTex(LatexObj obj) {

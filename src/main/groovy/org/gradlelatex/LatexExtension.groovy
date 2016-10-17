@@ -49,6 +49,7 @@ class LatexExtension {
     objs[name].bib = args.bib ? p.file(args.bib) : null
     objs[name].dependsOn = args.dependsOn.collect { dep -> objs[dep.take(dep.lastIndexOf('.'))] }
     objs[name].aux = args.aux ? p.files(args.aux) : null
+    objs[name].extraArgs = args.extraArgs ?: ''
 
     LOG.info "Added builder for TeX file $args.tex"
     addPdfLatexTask(objs[name])

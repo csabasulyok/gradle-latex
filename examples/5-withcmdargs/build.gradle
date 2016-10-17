@@ -1,0 +1,23 @@
+// include latex plugin on classpath
+
+buildscript {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+    }
+    dependencies {
+        classpath group: 'org.gradlelatex', name: 'gradle-latex', version: '1.0-SNAPSHOT'
+    }
+}
+
+
+apply plugin: 'latex'
+
+latex {
+
+    // this example uses Minted, which needs the option -shell-escape on console
+    tex(tex: 'document.tex',
+        extraArgs: '-shell-escape',
+        aux: 'example.py')
+
+}

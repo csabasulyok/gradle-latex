@@ -1,0 +1,14 @@
+\documentclass{article}
+
+% tell minted to use a cache dir subfolder of our gradle metadata,
+% that way gradle cleanLatex will take it into consideration
+\usepackage[cachedir=.gradle/latex-temp/minted]{minted}
+
+
+\begin{document}
+
+The next code will be directly imported from a file:
+ 
+\inputminted{python}{example.py}
+
+\end{document}
