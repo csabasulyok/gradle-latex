@@ -13,10 +13,10 @@ class LatexUtils {
     this.p = p
   }
 
-  void exec(String cmd) {
+  void exec(String cmd, File dir = p.projectDir) {
     LOG.quiet "Executing $cmd"
     def cmdSplit = cmd.split(' ')
-    p.ant.exec(executable: cmdSplit[0], dir: p.projectDir, failonerror: true) {
+    p.ant.exec(executable: cmdSplit[0], dir: dir, failonerror: true) {
       cmdSplit[1..-1].each { argv ->
         arg(value: argv)
       }
@@ -28,7 +28,8 @@ class LatexUtils {
   }
 
   void bibTex(LatexObj obj) {
-    exec "bibtex ${p.latex.quiet?'-quiet':''} ${p.latex.auxDir}/${obj.name}"
+    p.ant.copy(file: obj.bib, todir:p.latex.auxDir, overwrite:true, force:true)
+    exec "bibtex ${obj.name}", p.latex.auxDir
   }
 
   void copyOutput(LatexObj obj) {
