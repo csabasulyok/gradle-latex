@@ -19,5 +19,5 @@ latex {
     tex 'document.tex'
 
     // custom file name
-    tex(tex:'document.tex', pdf:'customOutput')
+    tex(tex:'document.tex', pdf:'customOutput.pdf')
 }

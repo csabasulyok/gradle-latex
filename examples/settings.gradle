@@ -1,0 +1,5 @@
+include '1-helloworld'
+include '2-withbib'
+include '3-withdependent'
+include '4-withauxdir'
+include '5-withcmdargs'
