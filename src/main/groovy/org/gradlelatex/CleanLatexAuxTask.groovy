@@ -13,7 +13,7 @@ class CleanLatexAuxTask extends DefaultTask {
   @TaskAction
   void clean() {
     if (project.latex.cleanTemp) {
-      project.latex.utils.exec "rm -rf ${project.latex.auxDir}"
+      project.latex.utils.emptyContent(project.latex.auxDir)
     }
   }
 }

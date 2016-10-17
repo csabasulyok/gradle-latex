@@ -19,12 +19,10 @@ class LatexPluginTest {
   @Test
   public void apply_addsTasks() {
     // adds 3 necessary tasks
-    assertNotNull(p.tasks.bibTex)
-    assertTrue(p.tasks.bibTex instanceof BibTexTask)
     assertNotNull(p.tasks.pdfLatex)
-    assertTrue(p.tasks.pdfLatex instanceof PdfLatexTask)
+    assertNotNull(p.tasks.cleanLatexAux)
+    assertTrue(p.tasks.cleanLatexAux instanceof CleanLatexAuxTask)
     assertNotNull(p.tasks.cleanLatex)
-    assertTrue(p.tasks.cleanLatex instanceof CleanLatexTask)
 
     // adds default task
     assertTrue(p.defaultTasks.contains('pdfLatex'))

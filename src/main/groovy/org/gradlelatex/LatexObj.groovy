@@ -3,6 +3,8 @@ package org.gradlelatex
 import org.gradle.api.file.FileCollection
 
 class LatexObj {
+  
+  String name
   File tex
   File bib
   File pdf

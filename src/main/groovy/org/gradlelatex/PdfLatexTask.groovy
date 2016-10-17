@@ -14,24 +14,22 @@ class PdfLatexTask extends DefaultTask {
   final String description = 'Runs pdflatex on given tex file (default: document.tex)'
 
   File tex
-  File pdf
-  
   @InputFiles
   FileCollection inputFiles
-  
   @OutputFile
-  File pdfFile
+  File pdf
+  String jobName
   
   @TaskAction
   void pdfLatex() {
-    project.latex.utils.exec "pdflatex -aux-directory=${project.latex.auxDir} -job-name=${pdf} ${project.latex.quiet?'-quiet':''} ${tex}"
-    project.latex.utils.exec "pdflatex -aux-directory=${project.latex.auxDir} -job-name=${pdf} ${project.latex.quiet?'-quiet':''} ${tex}"
+    project.latex.utils.exec "pdflatex -aux-directory=${project.latex.auxDir} -job-name=${jobName} ${project.latex.quiet?'-quiet':''} ${tex}"
+    project.latex.utils.exec "pdflatex -aux-directory=${project.latex.auxDir} -job-name=${jobName} ${project.latex.quiet?'-quiet':''} ${tex}"
   }
   
   void setProps(LatexObj obj) {
     tex = obj.tex
     pdf = obj.pdf
     inputFiles = project.files(tex, obj.aux)
-    pdfFile = new File("${pdf}.pdf")
+    jobName = pdf.name.take(pdf.name.lastIndexOf('.'))
   }
 }
