@@ -16,4 +16,6 @@ apply plugin: 'latex'
 latex {
     // connect document to bib file
     tex(tex: 'document.tex', bib: 'references.bib', pdf: 'output.pdf')
+	
+	cleanTemp = true
 }

@@ -23,13 +23,16 @@ class PdfLatexTask extends DefaultTask {
 
   @TaskAction
   void pdfLatex() {
-    project.latex.utils.pdfLatex(obj)
-    project.latex.utils.pdfLatex(obj)
+    project.latex.utils.with { LatexUtils utils ->
+      utils.pdfLatex(obj)
+      utils.pdfLatex(obj)
+      utils.copyOutput(obj)
+    }
   }
 
   void setObj(LatexObj obj) {
     this.obj = obj
     this.pdf = obj.pdf
-    this.inputFiles = project.files([obj.tex, obj.dependsOn.collect { it.pdf }, obj.aux].flatten() - null)
+    this.inputFiles = project.files([obj.tex, obj.bib, obj.dependsOn.collect { it.pdf }, obj.aux].flatten() - null)
   }
 }

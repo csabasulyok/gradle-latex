@@ -24,11 +24,17 @@ class LatexUtils {
   }
 
   void pdfLatex(LatexObj obj) {
-    exec "pdflatex -aux-directory=${p.latex.auxDir} -job-name=${obj.jobName} ${p.latex.quiet?'-quiet':''} ${obj.extraArgs} ${obj.tex}"
+    exec "pdflatex -output-directory=${p.latex.auxDir} ${p.latex.quiet?'-quiet':''} ${obj.extraArgs} ${obj.tex}"
   }
 
   void bibTex(LatexObj obj) {
-    exec "bibtex ${p.latex.quiet?'-quiet':''} ${p.latex.auxDir}/${obj.jobName}"
+    exec "bibtex ${p.latex.quiet?'-quiet':''} ${p.latex.auxDir}/${obj.name}"
+  }
+
+  void copyOutput(LatexObj obj) {
+    File src = new File("${p.latex.auxDir}/${obj.name}.pdf")
+    LOG.quiet "Copying $src to ${obj.pdf}"
+    p.ant.copy(file: src, tofile:obj.pdf, overwrite:true, force:true)
   }
 
   void emptyContent(File dir) {

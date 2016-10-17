@@ -31,6 +31,6 @@ class BibTexTask extends DefaultTask {
   void setObj(LatexObj obj) {
     this.obj = obj
     this.bib = obj.bib
-    this.bbl = new File(project.latex.auxDir, "${obj.jobName}.bbl")
+    this.bbl = new File(project.latex.auxDir, "${obj.name}.bbl")
   }
 }
