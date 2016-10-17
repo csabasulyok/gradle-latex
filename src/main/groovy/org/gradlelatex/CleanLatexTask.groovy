@@ -10,13 +10,14 @@ class CleanLatexTask extends DefaultTask {
   final String group = 'Latex'
   final String description = 'Cleans all latex-related files in project'
 
+  File pdf
+  
   @TaskAction
   void clean() {
-    if (project.latex.cleanTemp) {
-      project.latex.utils.exec "rm -rf ${project.latex.auxDir}/*"
-    }
-    project.latex.eachObj { obj ->
-      project.latex.utils.exec "rm ${obj.pdf}.pdf"
-    }
+    project.latex.utils.exec "rm ${pdf}.pdf"
+  }
+  
+  void setProps(LatexObj obj) {
+    pdf = obj.pdf
   }
 }

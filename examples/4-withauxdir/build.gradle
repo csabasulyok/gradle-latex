@@ -17,7 +17,7 @@ latex {
     tex(tex: 'document.tex',
         bib: 'references.bib',
         dependsOn: ['dependent.tex'],
-        aux: ['auxiliary.tex', 'img/*'])
+        aux: ['auxiliary.tex', 'img'])
 
     cleanTemp = true
 }

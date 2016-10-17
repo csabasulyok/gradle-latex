@@ -12,10 +12,11 @@ class LatexPlugin implements Plugin<Project> {
     // extension
     p.extensions.create('latex', LatexExtension, p)
 
-    // tasks
-    p.task('bibTex', type: BibTexTask).onlyIf { task -> p.latex.bibInputs }
-    p.task('pdfLatex', type: PdfLatexTask, dependsOn: 'bibTex')
-    p.task('cleanLatex', type: CleanLatexTask)
+    // placeholder tasks which will get dependencies for each TeX file added
+    p.task('pdfLatex')
+    // cleaning tasks
+    p.task('cleanLatexAux', type: CleanLatexAuxTask)
+    p.task('cleanLatex', dependsOn: 'cleanLatexAux')
 
     // pdflatex becomes the default task
     p.defaultTasks 'pdfLatex'
