@@ -10,7 +10,6 @@ buildscript {
     }
 }
 
-
 apply plugin: 'latex'
 
 latex {
@@ -18,7 +17,7 @@ latex {
     tex(tex: 'document.tex',
         bib: 'references.bib',
         dependsOn: ['dependent.tex'],
-        aux: ['auxiliary.tex'])
+        aux: ['auxiliary.tex', 'img/*'])
 
     cleanTemp = true
 }

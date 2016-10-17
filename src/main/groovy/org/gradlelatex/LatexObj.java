@@ -4,7 +4,6 @@ import java.io.File;
 import java.util.List;
 
 import org.gradle.api.file.FileCollection;
-import org.gradlelatex.LatexObj;
 
 public class LatexObj {
   private File tex;
