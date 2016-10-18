@@ -25,6 +25,7 @@ class PdfLatexTask extends DefaultTask {
   void pdfLatex() {
     project.latex.utils.with { LatexUtils utils ->
       utils.pdfLatex(obj)
+      utils.copyOutput(obj)
       utils.pdfLatex(obj)
       utils.copyOutput(obj)
     }
