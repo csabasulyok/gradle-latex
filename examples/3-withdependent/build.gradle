@@ -19,6 +19,4 @@ latex {
         bib: 'references.bib',
         dependsOn: ['dependent.tex'],
         aux: ['auxiliary.tex'])
-
-    cleanTemp = true
 }

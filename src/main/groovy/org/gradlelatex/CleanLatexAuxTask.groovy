@@ -4,16 +4,34 @@ import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
 
 /**
- * Clean task for LaTeX
+ * Task to empty auxiliary folder used in LaTeX compilation.
+ * 
+ * @author csabasulyok
  */
 class CleanLatexAuxTask extends DefaultTask {
-  final String group = 'Latex'
-  final String description = 'Cleans auxiliary files used in LaTeX compilation'
+  
+  //===============================
+  // Task description (Gradle API)
+  //===============================
+  
+  String getGroup() {
+    LatexPlugin.TASK_GROUP
+  }
+  String getDescription() {
+    "Cleans all TeX auxiliary files (out, bbl, log, etc.) from ${project.latex.auxDir}"
+  }
 
+  
+  //=============
+  // Task action
+  //=============
+  
+  /**
+   * Main task action.
+   * Empties auxiliary directory.
+   */
   @TaskAction
   void clean() {
-    if (project.latex.cleanTemp) {
-      project.latex.utils.emptyContent(project.latex.auxDir)
-    }
+    project.latex.utils.emptyContent(project.latex.auxDir)
   }
 }

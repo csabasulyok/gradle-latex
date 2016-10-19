@@ -5,25 +5,49 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
 /**
- * Gradle extension to hold all latex-file-related data.
+ * Gradle extension to create new dynamic tasks & maintain and manage latex artifacts.
+ * Registered to Gradle as extension in LatexPlugin. Thereafter the instance can be accessed via project.latex
+ * 
+ * @author csabasulyok
  */
 class LatexExtension {
   Logger LOG = LoggerFactory.getLogger(LatexExtension)
 
-  /**
-   * Final properties
-   */
+  //==================
+  // Final properties
+  //==================
+  
   final Project p
-  final File auxDir
-  final LatexUtils utils
-  protected LinkedHashMap<String, LatexObj> objs = [:]
-
+  
   /**
-   * Configurable properties
+   * Auxiliary directory where all metadata (obj, out, log, bbl files) are stored.
+   */
+  final File auxDir
+  
+  /**
+   * Utilities for easy execution.
+   * After adding extension, can be accessed via project.latex.utils
+   */
+  final LatexUtils utils
+  
+  /**
+   * Main container of Latex artifacts.
+   * build.gradle can add new entries, which will dynamically create new tasks.
+   */
+  protected LinkedHashMap<String, LatexArtifact> objs = [:]
+
+  
+  
+  //=========================
+  // Configurable properties
+  //=========================
+  
+  /**
+   * Flag to pass 'quiet' argument to pdflatex or not.
+   * If set, pdflatex will print much information.
    */
   boolean quiet = true
-  boolean cleanTemp = false
-
+  
 
   LatexExtension(Project p) {
     this.p = p
@@ -34,57 +58,143 @@ class LatexExtension {
     this.auxDir.mkdirs()
     LOG.info "Project $p using auxiliary directory $auxDir"
   }
-
-  void tex(String texName) {
-    tex([tex: texName])
-  }
-
-  void tex(Map args) {
-    String name = args.tex.take(args.tex.lastIndexOf('.'))
-    objs[name] = new LatexObj()
-
-    objs[name].name = name
-    objs[name].tex = p.file(args.tex)
-    objs[name].pdf = p.file(args.pdf ?: "${name}.pdf")
-    objs[name].bib = args.bib ? p.file(args.bib) : null
-    objs[name].dependsOn = args.dependsOn.collect { dep -> objs[dep.take(dep.lastIndexOf('.'))] }
-    objs[name].aux = args.aux ? p.files(args.aux) : null
-    objs[name].extraArgs = args.extraArgs ?: ''
-
-    LOG.info "Added builder for TeX file $args.tex"
-    addPdfLatexTask(objs[name])
-    if (args.bib) {
-      addBibTexTask(objs[name])
-    }
-  }
-
-  void addPdfLatexTask(LatexObj obj) {
-    LOG.info "Dynamically adding task 'pdfLatex.${obj.name}'"
-    PdfLatexTask pdfLatexTask = p.task("pdfLatex.${obj.name}", type: PdfLatexTask, overwrite: true)
-    pdfLatexTask.setObj(obj)
-    obj.dependsOn.each { depObj ->
-      PdfLatexTask depPdfLatexTask = p.tasks["pdfLatex.${depObj.name}"]
-      pdfLatexTask.dependsOn depPdfLatexTask
-    }
-    p.tasks["pdfLatex"].dependsOn "pdfLatex.${obj.name}"
-
-    LOG.info "Dynamically adding task 'cleanLatex.${obj.name}'"
-    CleanLatexTask cleanLatexTask = p.task("cleanLatex.${obj.name}", type: CleanLatexTask, overwrite: true)
-    cleanLatexTask.setObj(obj)
-    p.tasks["cleanLatex"].dependsOn "cleanLatex.${obj.name}"
-  }
-
-  void addBibTexTask(LatexObj obj) {
-    LOG.info "Dynamically adding task 'bibTex.${obj.name}'"
-    BibTexTask bibTexTask = p.task("bibTex.${obj.name}", type: BibTexTask, overwrite: true)
-    bibTexTask.setObj(obj)
-    p.tasks["pdfLatex.${obj.name}"].dependsOn "bibTex.${obj.name}"
-  }
-
+  
+  /**
+   * Run a closure on a LatexArtifact and each of its dependencies (recursively),
+   * starting with the dependencies.
+   * 
+   * @param name Name of artifact
+   * @param closure Closure to be run on artifact and each of its dependencies
+   */
   void with(String name, Closure closure) {
     objs[name].dependsOn.each { dependentObj ->
       with("${dependentObj.name}", closure)
     }
     objs[name].with(closure)
+  }
+  
+  //=================================
+  // facade methods for build.gradle
+  //=================================
+  
+  /**
+   * Assign a new LaTeX artifact only based on the name of the main TeX file.
+   * Every other property is deduced.
+   * 
+   * @param texName filename of main TeX file
+   */
+  void tex(String texName) {
+    tex([tex: texName])
+  }
+
+  /**
+   * Assign a new LaTeX artifact to build via a map of properties.
+   * 
+   * @param args Map of properties of new LaTeX artifact
+   */
+  void tex(Map args) {
+    
+    // name = TeX file name without extension
+    String name = args.tex.take(args.tex.lastIndexOf('.'))
+    
+    objs[name] = new LatexArtifact()
+    objs[name].name = name
+    objs[name].tex = p.file(args.tex)
+    
+    // PDF either given, or same as TeX file with different extension
+    objs[name].pdf = p.file(args.pdf ?: "${name}.pdf")
+    // bib file optional
+    objs[name].bib = args.bib ? p.file(args.bib) : null
+    
+    // build dependencies
+    // find already existing LatexArtifact instances instead of holding just names
+    objs[name].dependsOn = args.dependsOn.collect { dep -> objs[dep.take(dep.lastIndexOf('.'))] }
+    
+    // assign auxiliary files as FileCollection Gradle can watch
+    objs[name].aux = args.aux ? p.files(args.aux) : null
+    // extra args optional
+    objs[name].extraArgs = args.extraArgs ?: ''
+
+    LOG.info "Added builder for TeX file $args.tex"
+    
+    // dynamically wire new tasks into workflow
+    addPdfLatexTask(objs[name])
+    addCleanLatexTask(objs[name])
+    if (args.bib) {
+      addBibTexTask(objs[name])
+    }
+  }
+
+  //==============================================
+  // auxiliary methods for on-the-fly task wiring
+  //==============================================
+  
+  /**
+   * Wire new pdfLatex task into workflow based on a LatexArtifact.
+   * 
+   * Given an artifact with name "texfile", new task "pdfLatex.texfile" is created,
+   * which compiles "texfile.tex".
+   * 
+   * The new task is then inserted as a dependency of the main "pdfLatex" task.
+   * 
+   * @param obj The basis artifact of the new task. 
+   */
+  private void addPdfLatexTask(LatexArtifact obj) {
+    LOG.info "Dynamically adding task 'pdfLatex.${obj.name}'"
+    
+    // create new task and set its properties using the artifact
+    PdfLatexTask pdfLatexTask = p.task("pdfLatex.${obj.name}", type: PdfLatexTask, overwrite: true)
+    pdfLatexTask.setObj(obj)
+    
+    // add dependency to all already existing pdfLatex tasks of dependent artifacts
+    obj.dependsOn.each { depObj ->
+      PdfLatexTask depPdfLatexTask = p.tasks["pdfLatex.${depObj.name}"]
+      pdfLatexTask.dependsOn depPdfLatexTask
+    }
+    
+    // add new task as dependency of main task
+    p.tasks["pdfLatex"].dependsOn "pdfLatex.${obj.name}"
+  }
+  
+  /**
+   * Wire new cleanLatex task into workflow based on a LatexArtifact.
+   *
+   * Given an artifact with name "texfile", new task "cleanLatex.texfile" is created,
+   * which cleans all output of "pdfLatex.texfile".
+   *
+   * The new task is then inserted as a dependency of the main "cleanLatex" task.
+   *
+   * @param obj The basis artifact of the new task.
+   */
+  private void addCleanLatexTask(LatexArtifact obj) {
+    LOG.info "Dynamically adding task 'cleanLatex.${obj.name}'"
+    
+    // create new task and set its properties using the artifact
+    CleanLatexTask cleanLatexTask = p.task("cleanLatex.${obj.name}", type: CleanLatexTask, overwrite: true)
+    cleanLatexTask.setObj(obj)
+    
+    // add new task as dependency of main task
+    p.tasks["cleanLatex"].dependsOn "cleanLatex.${obj.name}"
+  }
+
+  /**
+   * Wire new bibTex task into workflow based on a LatexArtifact.
+   *
+   * Given an artifact with name "texfile" and bib "refs.bib", new task "bibTex.texfile" is created,
+   * which compiles "texfile.tex" and calls bibtex on the auxiliary.
+   *
+   * The new task is then inserted as a dependency of the associated "pdfLatex.texfile" task.
+   *
+   * @param obj The basis artifact of the new task.
+   */
+  private void addBibTexTask(LatexArtifact obj) {
+    LOG.info "Dynamically adding task 'bibTex.${obj.name}'"
+    
+    // create new task and set its properties using the artifact
+    BibTexTask bibTexTask = p.task("bibTex.${obj.name}", type: BibTexTask, overwrite: true)
+    bibTexTask.setObj(obj)
+    
+    // add new task as dependency of associated pdfLatex task
+    p.tasks["pdfLatex.${obj.name}"].dependsOn "bibTex.${obj.name}"
   }
 }

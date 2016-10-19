@@ -6,29 +6,68 @@ import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.TaskAction
 
 /**
- * Gradle task to run bibTex on an aux file
+ * Gradle task to run bibTex on an aux file.
+ * One such task is created for each Latex artifact.
+ * 
+ * @author csabasulyok
  */
 class BibTexTask extends DefaultTask {
-  final String group = 'Latex'
-  final String description = 'Runs bibtex on all *.bib files in project'
-
-  LatexObj obj
-
+  
+  /**
+   * Latex artifact used to run current task.
+   */
+  LatexArtifact obj
+  
+  /**
+   * Input of current task. Not used by task itself. Set for Gradle's continuous build feature.
+   * BibTex is called on the aux file produced by the main TeX file.
+   * We mark the bib as input only so Gradle would only rerun this task when bib file changes.
+   */
   @InputFile
   File bib
-
+  
+  /**
+   * Output of current task. Not used by task itself.
+   * Set for Gradle's continuous build feature.
+   */
   @OutputFile
   File bbl
 
+  
+  //===============================
+  // Task description (Gradle API)
+  //===============================
+  
+  String getGroup() {
+    LatexPlugin.TASK_GROUP
+  }
+  
+  String getDescription() {
+    "Uses bibtex to compile references of ${obj.tex.name}"
+  }
+
+  
+  //=============
+  // Task action
+  //=============
+  
+  /**
+   * Main task action.
+   * Empties auxiliary directory.
+   */
   @TaskAction
   void bibtex() {
-    project.latex.with(obj.name) { LatexObj subObj ->
+    project.latex.with(obj.name) { LatexArtifact subObj ->
       project.latex.utils.pdfLatex(subObj)
     }
     project.latex.utils.bibTex(obj)
   }
 
-  void setObj(LatexObj obj) {
+  /**
+   * Set task properties based on Latex artifact.
+   * @param obj Latex artifact
+   */
+  void setObj(LatexArtifact obj) {
     this.obj = obj
     this.bib = obj.bib
     this.bbl = new File(project.latex.auxDir, "${obj.name}.bbl")
