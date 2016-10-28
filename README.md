@@ -7,6 +7,7 @@ It offers the following:
 - compile multiple `tex` and `bib` files with dependencies in-between them;
 - use Gradle's [continuous build feature](https://docs.gradle.org/current/userguide/continuous_build.html) to watch for changing sources
 - watch auxiliary files (images, extra tex files, etc.)
+- use [Inkscape](https://inkscape.org/) to convert images in unsupported formats like `svg` or `emf`
 
 
 Requirements
@@ -14,10 +15,14 @@ Requirements
 - LaTeX compiler: `pdflatex` and `bibtex` on `PATH` (tested using [MikTeX](https://miktex.org/) on Windows and [TeXLive](https://www.tug.org/texlive/) on Linux)
 - Java version 1.8+
 - Gradle 2.0+
+- if using automatic image conversion, also `inkscape` on `PATH`
 
 
 Gradle usage
 ------------
+
+Check the [examples](https://github.com/csabasulyok/gradle-latex/tree/master/examples) for further information.
+
 ### 1. Including plugin ###
 The plugin can be used by including the following in your `build.gradle`:
 
@@ -46,6 +51,8 @@ latex {
     tex tex:'doc2.tex', pdf:'customDoc1'
     // doc3.tex, refs.bib -> doc3.pdf
     tex tex:'doc3.tex', bib:'refs.bib'
+    // img.svg -> img.pdf, doc4.tex -> doc4.pdf
+    tex tex:'doc4.pdf', img:['img.svg']
 }
 ~~~
 

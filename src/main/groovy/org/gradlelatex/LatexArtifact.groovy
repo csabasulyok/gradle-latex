@@ -9,7 +9,7 @@ import org.gradle.api.file.FileCollection
  * @author csabasulyok
  */
 class LatexArtifact {
-
+  
   /**
    * Name of artifact - derived from the name of the input TeX file,
    * without its extension.
@@ -40,6 +40,13 @@ class LatexArtifact {
    * in order for this one to work (e.g. used with \input). 
    */
   Collection<LatexArtifact> dependsOn
+  
+  /**
+   * Collection of image files or directories with images
+   * which have to be transformed because LaTeX cannot use them directly (e.g. svg, emf).
+   * These are transformed to PDFs which then can be included in pdflatex. 
+   */
+  FileCollection img
   
   /**
    * Collection of dependencies which do not have to be compiled

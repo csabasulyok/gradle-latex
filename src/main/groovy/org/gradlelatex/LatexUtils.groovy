@@ -1,6 +1,7 @@
 package org.gradlelatex
 
 import org.gradle.api.Project
+import org.gradle.api.file.FileCollection
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -11,13 +12,13 @@ import org.slf4j.LoggerFactory
  */
 class LatexUtils {
   Logger LOG = LoggerFactory.getLogger(LatexUtils)
-
+  
   final Project p
-
+  
   LatexUtils(Project p) {
     this.p = p
   }
-
+  
   /**
    * Execute arbitrary command with the help of ant.
    * 
@@ -33,7 +34,7 @@ class LatexUtils {
       }
     }
   }
-
+  
   /**
    * Execute pdflatex command for given latex artifact.
    * All auxiliary files(aux, out, log) and the pdf output is stored in an auxiliary directory.
@@ -43,7 +44,7 @@ class LatexUtils {
   void pdfLatex(LatexArtifact obj) {
     exec "pdflatex -output-directory=${p.latex.auxDir} ${p.latex.quiet?'-quiet':''} ${obj.extraArgs} ${obj.tex}"
   }
-
+  
   /**
    * Execute bibtex command for given latex artifact.
    *
@@ -53,7 +54,19 @@ class LatexUtils {
     p.ant.copy(file: obj.bib, todir:p.latex.auxDir, overwrite:true, force:true)
     exec "bibtex ${obj.name}", p.latex.auxDir
   }
-
+  
+  
+  /**
+   * Execute inkscape for an image file, to produce a pdf.
+   *
+   * @param imgFile source svg/emf file for inkscape
+   * @param pdfFile target pdf file
+   */
+  void inkscape(File imgFile, File pdfFile) {
+    exec "inkscape --export-pdf=${pdfFile} ${imgFile}"
+  }
+  
+  
   /**
    * Copies output of pdfLatex to final destination as described in a latex artifact.
    * Should be called right after pdfLatex.
@@ -65,7 +78,7 @@ class LatexUtils {
     LOG.quiet "Copying $src to ${obj.pdf}"
     p.ant.copy(file: src, tofile:obj.pdf, overwrite:true, force:true)
   }
-
+  
   /**
    * Use ant to delete all files from a directory.
    * 
@@ -76,5 +89,27 @@ class LatexUtils {
     p.ant.delete {
       fileset(dir: dir, includes:'**/*')
     }
+  }
+  
+  
+  /**
+   * Reduces a FileCollection so that if directories are included,
+   * only unsupported image files (svg/emf) for inkscape are tagged.
+   */
+  FileCollection findImgFiles(Collection<String> fileNames) {
+    p.files(fileNames.collect { String imgFile ->
+      if (p.file(imgFile).directory) {
+        p.fileTree(dir: imgFile, include: ['**/*.svg', '**/*.emf'])
+      } else {
+        imgFile
+      }
+    })
+  }
+  
+  /**
+   * Creates expected pdf file based on image file. 
+   */
+  File imgFileToPdfFile(File imgFile) {
+    new File("$imgFile".take("$imgFile".lastIndexOf('.')) + '.pdf')
   }
 }

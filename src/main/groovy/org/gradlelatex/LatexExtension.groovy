@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory
  */
 class LatexExtension {
   Logger LOG = LoggerFactory.getLogger(LatexExtension)
-
+  
   //==================
   // Final properties
   //==================
@@ -35,7 +35,7 @@ class LatexExtension {
    * build.gradle can add new entries, which will dynamically create new tasks.
    */
   protected LinkedHashMap<String, LatexArtifact> objs = [:]
-
+  
   
   
   //=========================
@@ -48,11 +48,11 @@ class LatexExtension {
    */
   boolean quiet = true
   
-
+  
   LatexExtension(Project p) {
     this.p = p
     this.utils = new LatexUtils(p)
-
+    
     // create auxiliary directory
     this.auxDir = p.file('.gradle/latex-temp')
     this.auxDir.mkdirs()
@@ -86,7 +86,7 @@ class LatexExtension {
   void tex(String texName) {
     tex([tex: texName])
   }
-
+  
   /**
    * Assign a new LaTeX artifact to build via a map of properties.
    * 
@@ -110,11 +110,13 @@ class LatexExtension {
     // find already existing LatexArtifact instances instead of holding just names
     objs[name].dependsOn = args.dependsOn.collect { dep -> objs[dep.take(dep.lastIndexOf('.'))] }
     
-    // assign auxiliary files as FileCollection Gradle can watch
+    // assign image files/dirs as a FileCollection Gradle can watch
+    objs[name].img = args.img ? utils.findImgFiles(args.img) : null
+    // assign auxiliary files as aFileCollection Gradle can watch
     objs[name].aux = args.aux ? p.files(args.aux) : null
     // extra args optional
     objs[name].extraArgs = args.extraArgs ?: ''
-
+    
     LOG.info "Added builder for TeX file $args.tex"
     
     // dynamically wire new tasks into workflow
@@ -123,8 +125,11 @@ class LatexExtension {
     if (args.bib) {
       addBibTexTask(objs[name])
     }
+    if (args.img) {
+      addInkscapeTask(objs[name])
+    }
   }
-
+  
   //==============================================
   // auxiliary methods for on-the-fly task wiring
   //==============================================
@@ -176,7 +181,7 @@ class LatexExtension {
     // add new task as dependency of main task
     p.tasks["cleanLatex"].dependsOn "cleanLatex.${obj.name}"
   }
-
+  
   /**
    * Wire new bibTex task into workflow based on a LatexArtifact.
    *
@@ -196,5 +201,26 @@ class LatexExtension {
     
     // add new task as dependency of associated pdfLatex task
     p.tasks["pdfLatex.${obj.name}"].dependsOn "bibTex.${obj.name}"
+  }
+  
+  /**
+   * Wire new inkscape task into workflow based on a LatexArtifact.
+   *
+   * Given an artifact with name "texfile" and img "image.svg", new task "inkscape.texfile" is created,
+   * which creates "image.pdf" using inkscape.
+   *
+   * The new task is then inserted as a dependency of the associated "pdfLatex.texfile" task.
+   *
+   * @param obj The basis artifact of the new task.
+   */
+  private void addInkscapeTask(LatexArtifact obj) {
+    LOG.info "Dynamically adding task 'inkscape.${obj.name}'"
+    
+    // create new task and set its properties using the artifact
+    InkscapeTask inkscapeTask = p.task("inkscape.${obj.name}", type: InkscapeTask, overwrite: true)
+    inkscapeTask.setObj(obj)
+    
+    // add new task as dependency of associated pdfLatex task
+    p.tasks["pdfLatex.${obj.name}"].dependsOn "inkscape.${obj.name}"
   }
 }

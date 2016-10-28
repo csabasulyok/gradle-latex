@@ -1,6 +1,7 @@
 package org.gradlelatex
 
 import org.gradle.api.DefaultTask
+import org.gradle.api.file.FileCollection
 import org.gradle.api.tasks.TaskAction
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -19,6 +20,11 @@ class CleanLatexTask extends DefaultTask {
    */
   File pdf
   
+  /**
+   * Inkscaped image files. Their associated pdf gets deleted by this task.
+   */
+  FileCollection img
+  
   
   //===============================
   // Task description (Gradle API)
@@ -28,7 +34,7 @@ class CleanLatexTask extends DefaultTask {
   }
   
   String getDescription() {
-    "Removes output PDF ${pdf.name}"
+    "Removes output PDF ${pdf.name} and associated inkscaped PDFs if any exist"
   }
   
   //=============
@@ -43,6 +49,14 @@ class CleanLatexTask extends DefaultTask {
   void clean() {
     LOG.quiet "Removing file $pdf"
     pdf.delete()
+    
+    img.each { File imgFile ->
+      File pdfFile = project.latex.utils.imgFileToPdfFile(imgFile)
+      if (pdfFile.exists()) {
+        LOG.quiet "Removing inkscape output $pdfFile"
+        pdfFile.delete()
+      }
+    }
   }
   
   /**
@@ -51,5 +65,6 @@ class CleanLatexTask extends DefaultTask {
    */
   void setObj(LatexArtifact obj) {
     pdf = obj.pdf
+    img = obj.img
   }
 }

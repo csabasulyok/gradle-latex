@@ -13,12 +13,12 @@ import org.gradle.api.tasks.TaskAction
  * @author csabasulyok
  */
 class PdfLatexTask extends DefaultTask {
-  
+
   /**
    * Latex artifact used to run current task.
    */
   LatexArtifact obj
-  
+
   /**
    * Collection of all files whose change should trigger this task.
    * Collected for Gradle's continuous build feature.
@@ -30,19 +30,19 @@ class PdfLatexTask extends DefaultTask {
    */
   @InputFiles
   FileCollection inputFiles
-  
+
   /**
    * Output of current task. Not used by task itself.
    * Set for Gradle's continuous build feature.
    */
   @OutputFile
   File pdf
-  
-  
+
+
   //===============================
   // Task description (Gradle API)
   //===============================
-  
+
   String getGroup() {
     LatexPlugin.TASK_GROUP
   }
@@ -51,11 +51,11 @@ class PdfLatexTask extends DefaultTask {
     "Uses pdflatex to compile ${obj.tex.name} into ${obj.pdf.name}"
   }
 
-  
+
   //=============
   // Task action
   //=============
-  
+
   /**
    * Main task action.
    * Empties auxiliary directory.
@@ -77,6 +77,6 @@ class PdfLatexTask extends DefaultTask {
   void setObj(LatexArtifact obj) {
     this.obj = obj
     this.pdf = obj.pdf
-    this.inputFiles = project.files([obj.tex, obj.bib, obj.dependsOn.collect { it.pdf }, obj.aux].flatten() - null)
+    this.inputFiles = project.files([obj.tex, obj.bib, obj.dependsOn.collect { it.pdf }, obj.aux, obj.img].flatten() - null)
   }
 }

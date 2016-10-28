@@ -1,0 +1,20 @@
+// include latex plugin on classpath
+
+buildscript {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+    }
+    dependencies {
+        classpath group: 'org.gradlelatex', name: 'gradle-latex', version: '1.0-SNAPSHOT'
+    }
+}
+
+apply plugin: 'latex'
+
+latex {
+    tex(tex: 'document.tex',
+        // unsupported images (e.g. svg, emf) from the below tag will be watched for changes
+        // and Inkscape will convert them to pdf before pdfLatex is called
+        img: ['image1.svg', 'img'])
+}
