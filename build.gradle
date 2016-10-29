@@ -5,9 +5,13 @@ apply plugin: 'maven'
 // eclipse project generation support
 apply plugin: 'eclipse'
 
+// we want to deploy to OSSRH, so include signing
+apply plugin: 'signing'
+
+
 // identifiers
-group = 'org.gradlelatex'
-version = '1.0-SNAPSHOT'
+group = 'com.github.csabasulyok'
+version = '1.0'
 
 
 dependencies {
@@ -41,6 +45,11 @@ eclipse {
   pathVariables 'M2_REPO': file(repositories[0].url)
 }
 
+// signing setup
+signing {
+  sign configurations.archives
+}
+
 
 /**
  * define extra tasks to package sources/test classes/javadoc and add to build lifecycle
@@ -64,4 +73,53 @@ artifacts {
   archives tasks.sources
   archives tasks.testJar
   archives tasks.packageJavadoc
+}
+
+
+/**
+ * configure upload of the artifacts
+ */
+uploadArchives {
+  repositories {
+    mavenDeployer {
+      beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+      repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+        authentication(userName: ossrhUsername, password: ossrhPassword)
+      }
+
+      snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+        authentication(userName: ossrhUsername, password: ossrhPassword)
+      }
+
+      pom.project {
+        name 'Gradle LaTeX plugin'
+        packaging 'jar'
+        // optionally artifactId can be defined here 
+        description 'This Gradle plugin allows automation of compiling PDFs using LaTeX and BiBTeX.'
+        url 'https://github.com/csabasulyok/gradle-latex'
+
+        scm {
+          connection 'scm:git:git://github.com/csabasulyok/gradle-latex.git'
+          developerConnection 'scm:git:ssh://github.com:csabasulyok/gradle-latex.git'
+          url 'https://github.com/csabasulyok/gradle-latex'
+        }
+
+        licenses {
+          license {
+            name 'The Apache License, Version 2.0'
+            url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+          }
+        }
+
+        developers {
+          developer {
+            id 'csabasulyok'
+            name 'Csaba Sulyok'
+            email 'csaba.sulyok@gmail.com'
+          }
+        }
+      }
+    }
+  }
 }

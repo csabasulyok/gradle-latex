@@ -6,7 +6,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath group: 'org.gradlelatex', name: 'gradle-latex', version: '1.0-SNAPSHOT'
+        classpath group: 'com.github.csabasulyok', name: 'gradle-latex', version: '1.0'
     }
 }
 

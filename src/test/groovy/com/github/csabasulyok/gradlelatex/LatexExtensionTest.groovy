@@ -1,4 +1,4 @@
-package org.gradlelatex
+package com.github.csabasulyok.gradlelatex
 
 import static org.junit.Assert.*
 
@@ -6,6 +6,13 @@ import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
 import org.junit.Before
 import org.junit.Test
+
+import com.github.csabasulyok.gradlelatex.BibTexTask;
+import com.github.csabasulyok.gradlelatex.CleanLatexTask;
+import com.github.csabasulyok.gradlelatex.InkscapeTask;
+import com.github.csabasulyok.gradlelatex.LatexArtifact;
+import com.github.csabasulyok.gradlelatex.LatexExtension;
+import com.github.csabasulyok.gradlelatex.PdfLatexTask;
 
 class LatexExtensionTest {
   LatexExtension extension

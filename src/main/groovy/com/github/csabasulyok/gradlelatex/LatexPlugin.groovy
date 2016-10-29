@@ -1,4 +1,4 @@
-package org.gradlelatex
+package com.github.csabasulyok.gradlelatex
 
 import org.gradle.api.Plugin
 import org.gradle.api.Project
