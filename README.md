@@ -1,6 +1,7 @@
 Gradle LaTeX plugin
 ===================
 [![Build Status](https://travis-ci.org/csabasulyok/gradle-latex.svg?branch=master)](https://travis-ci.org/csabasulyok/gradle-latex)
+[![Stable version](https://maven-badges.herokuapp.com/maven-central/com.github.csabasulyok/gradle-latex/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.csabasulyok/gradle-latex)
 
 This plugin allows automation of compiling PDFs using [LaTeX](https://www.latex-project.org/) and [BiBTeX](http://www.bibtex.org/).
 It offers the following:
@@ -33,7 +34,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath group: 'com.github.csabasulyok', name: 'gradle-latex', version: '1.0-SNAPSHOT'
+        classpath group: 'com.github.csabasulyok', name: 'gradle-latex', version: '1.0'
     }
 }
 
