@@ -83,7 +83,7 @@ class LatexExtension {
    * 
    * @param texName filename of main TeX file
    */
-  void tex(String texName) {
+  LatexArtifact tex(String texName) {
     tex([tex: texName])
   }
   
@@ -91,8 +91,9 @@ class LatexExtension {
    * Assign a new LaTeX artifact to build via a map of properties.
    * 
    * @param args Map of properties of new LaTeX artifact
+   * @return New artifact
    */
-  void tex(Map args) {
+  LatexArtifact tex(Map args) {
     
     // name = TeX file name without extension
     String name = args.tex.take(args.tex.lastIndexOf('.'))
@@ -128,6 +129,8 @@ class LatexExtension {
     if (args.img) {
       addInkscapeTask(objs[name])
     }
+    
+    objs[name]
   }
   
   //==============================================
@@ -158,7 +161,7 @@ class LatexExtension {
     }
     
     // add new task as dependency of main task
-    p.tasks["pdfLatex"].dependsOn "pdfLatex.${obj.name}"
+    p.tasks["pdfLatex"].dependsOn pdfLatexTask
   }
   
   /**
@@ -179,7 +182,7 @@ class LatexExtension {
     cleanLatexTask.setObj(obj)
     
     // add new task as dependency of main task
-    p.tasks["cleanLatex"].dependsOn "cleanLatex.${obj.name}"
+    p.tasks["cleanLatex"].dependsOn cleanLatexTask
   }
   
   /**
@@ -200,7 +203,7 @@ class LatexExtension {
     bibTexTask.setObj(obj)
     
     // add new task as dependency of associated pdfLatex task
-    p.tasks["pdfLatex.${obj.name}"].dependsOn "bibTex.${obj.name}"
+    p.tasks["pdfLatex.${obj.name}"].dependsOn bibTexTask
   }
   
   /**
@@ -221,6 +224,6 @@ class LatexExtension {
     inkscapeTask.setObj(obj)
     
     // add new task as dependency of associated pdfLatex task
-    p.tasks["pdfLatex.${obj.name}"].dependsOn "inkscape.${obj.name}"
+    p.tasks["pdfLatex.${obj.name}"].dependsOn inkscapeTask
   }
 }

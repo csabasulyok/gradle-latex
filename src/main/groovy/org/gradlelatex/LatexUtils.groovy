@@ -20,29 +20,24 @@ class LatexUtils {
   }
   
   /**
-   * Execute arbitrary command with the help of ant.
-   * 
-   * @param cmd Command-line string to be called.
-   * @param dir Directory to call command from.
-   */
-  void exec(String cmd, File dir = p.projectDir) {
-    LOG.quiet "Executing $cmd"
-    def cmdSplit = cmd.split(' ')
-    p.ant.exec(executable: cmdSplit[0], dir: dir, failonerror: true) {
-      cmdSplit[1..-1].each { argv ->
-        arg(value: argv)
-      }
-    }
-  }
-  
-  /**
    * Execute pdflatex command for given latex artifact.
    * All auxiliary files(aux, out, log) and the pdf output is stored in an auxiliary directory.
    * 
    * @param obj Any Latex artifact with the tex property set.
    */
   void pdfLatex(LatexArtifact obj) {
-    exec "pdflatex -output-directory=${p.latex.auxDir} ${p.latex.quiet?'-quiet':''} ${obj.extraArgs} ${obj.tex}"
+    LOG.quiet "Executing pdflatex for $obj.name"
+    
+    p.ant.exec(executable: 'pdflatex', dir: p.projectDir, failonerror: true) {
+      arg(value: "-output-directory=${p.latex.auxDir}")
+      if (p.latex.quiet) {
+        arg(value: '-quiet')
+      }
+      if (obj.extraArgs) {
+        arg(value: obj.extraArgs)
+      }
+      arg(value: obj.tex)
+    }
   }
   
   /**
@@ -51,8 +46,11 @@ class LatexUtils {
    * @param obj Any Latex artifact with the tex and bib properties set.
    */
   void bibTex(LatexArtifact obj) {
+    LOG.quiet "Executing bibtex for $obj.name"
     p.ant.copy(file: obj.bib, todir:p.latex.auxDir, overwrite:true, force:true)
-    exec "bibtex ${obj.name}", p.latex.auxDir
+    p.ant.exec(executable: 'bibtex', dir: p.latex.auxDir, failonerror: true) {
+      arg(value: obj.name)
+    }
   }
   
   
@@ -63,7 +61,10 @@ class LatexUtils {
    * @param pdfFile target pdf file
    */
   void inkscape(File imgFile, File pdfFile) {
-    exec "inkscape --export-pdf=${pdfFile} ${imgFile}"
+    p.ant.exec(executable: 'inkscape', dir: p.projectDir, failonerror: true) {
+      arg(value: "--export-pdf=${pdfFile}")
+      arg(value: imgFile)
+    }
   }
   
   
