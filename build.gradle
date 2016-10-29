@@ -79,44 +79,46 @@ artifacts {
 /**
  * configure upload of the artifacts
  */
-uploadArchives {
-  repositories {
-    mavenDeployer {
-      beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+if (project.hasProperty('release')) {
+  uploadArchives {
+    repositories {
+      mavenDeployer {
+        beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
 
-      repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
-        authentication(userName: ossrhUsername, password: ossrhPassword)
-      }
+        repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+          authentication(userName: ossrhUsername, password: ossrhPassword)
+        }
 
-      snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
-        authentication(userName: ossrhUsername, password: ossrhPassword)
-      }
+        snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+          authentication(userName: ossrhUsername, password: ossrhPassword)
+        }
 
-      pom.project {
-        name 'Gradle LaTeX plugin'
-        packaging 'jar'
-        // optionally artifactId can be defined here 
-        description 'This Gradle plugin allows automation of compiling PDFs using LaTeX and BiBTeX.'
-        url 'https://github.com/csabasulyok/gradle-latex'
-
-        scm {
-          connection 'scm:git:git://github.com/csabasulyok/gradle-latex.git'
-          developerConnection 'scm:git:ssh://github.com:csabasulyok/gradle-latex.git'
+        pom.project {
+          name 'Gradle LaTeX plugin'
+          packaging 'jar'
+          // optionally artifactId can be defined here 
+          description 'This Gradle plugin allows automation of compiling PDFs using LaTeX and BiBTeX.'
           url 'https://github.com/csabasulyok/gradle-latex'
-        }
 
-        licenses {
-          license {
-            name 'The Apache License, Version 2.0'
-            url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+          scm {
+            connection 'scm:git:git://github.com/csabasulyok/gradle-latex.git'
+            developerConnection 'scm:git:ssh://github.com:csabasulyok/gradle-latex.git'
+            url 'https://github.com/csabasulyok/gradle-latex'
           }
-        }
 
-        developers {
-          developer {
-            id 'csabasulyok'
-            name 'Csaba Sulyok'
-            email 'csaba.sulyok@gmail.com'
+          licenses {
+            license {
+              name 'The Apache License, Version 2.0'
+              url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+            }
+          }
+
+          developers {
+            developer {
+              id 'csabasulyok'
+              name 'Csaba Sulyok'
+              email 'csaba.sulyok@gmail.com'
+            }
           }
         }
       }
