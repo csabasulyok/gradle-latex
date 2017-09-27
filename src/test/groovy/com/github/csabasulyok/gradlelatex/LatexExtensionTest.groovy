@@ -7,13 +7,6 @@ import org.gradle.testfixtures.ProjectBuilder
 import org.junit.Before
 import org.junit.Test
 
-import com.github.csabasulyok.gradlelatex.BibTexTask;
-import com.github.csabasulyok.gradlelatex.CleanLatexTask;
-import com.github.csabasulyok.gradlelatex.InkscapeTask;
-import com.github.csabasulyok.gradlelatex.LatexArtifact;
-import com.github.csabasulyok.gradlelatex.LatexExtension;
-import com.github.csabasulyok.gradlelatex.PdfLatexTask;
-
 class LatexExtensionTest {
   LatexExtension extension
   Project p
@@ -30,7 +23,7 @@ class LatexExtensionTest {
   
   @Before
   void before() {
-    p = ProjectBuilder.builder().build()
+    p = ProjectBuilder.builder().withProjectDir(new File('.')).build()
     p.apply plugin: 'latex'
     extension = p.latex
   }
@@ -40,7 +33,23 @@ class LatexExtensionTest {
     // add new artifact by tex name
     LatexArtifact obj = extension.tex('example.tex')
     // artifact is set properly
-    assertArtifactProps(obj, name: 'example', texName: 'example.tex', pdfName: 'example.pdf')
+    assertArtifactProps(obj, name: 'example', nameNoPath: 'example', texName: 'example.tex', pdfName: 'example.pdf')
+  }
+  
+  @Test
+  void tex_addsArtifactByNameOnly_spaceInName() {
+    // add new artifact by tex name
+    LatexArtifact obj = extension.tex('ex ample.tex')
+    // artifact is set properly
+    assertArtifactProps(obj, name: 'ex ample', nameNoPath: 'ex_ample', texName: 'ex ample.tex', pdfName: 'ex ample.pdf')
+  }
+  
+  @Test
+  void tex_addsArtifactByNameOnly_texInSubfolder() {
+    // add new artifact by tex name
+    LatexArtifact obj = extension.tex('subdir/example.tex')
+    // artifact is set properly
+    assertArtifactProps(obj, name: 'subdir/example', nameNoPath: 'subdir_example', texName: 'subdir/example.tex', pdfName: 'subdir/example.pdf')
   }
   
   @Test
@@ -48,7 +57,7 @@ class LatexExtensionTest {
     // add new artifact by tex name
     LatexArtifact obj = extension.tex(tex: 'example.tex')
     // artifact is set properly
-    assertArtifactProps(obj, name: 'example', texName: 'example.tex', pdfName: 'example.pdf')
+    assertArtifactProps(obj, name: 'example', nameNoPath: 'example', texName: 'example.tex', pdfName: 'example.pdf')
     // tasks are added
     assertTrue(p.tasks['pdfLatex.example'] instanceof PdfLatexTask)
     assertTrue(p.tasks['cleanLatex.example'] instanceof CleanLatexTask)
@@ -57,11 +66,37 @@ class LatexExtensionTest {
   }
   
   @Test
+  void tex_addsSimpleArtifact_spaceInName() {
+    // add new artifact by tex name
+    LatexArtifact obj = extension.tex(tex: 'ex ample.tex')
+    // artifact is set properly
+    assertArtifactProps(obj, name: 'ex ample', nameNoPath: 'ex_ample', texName: 'ex ample.tex', pdfName: 'ex ample.pdf')
+    // tasks are added
+    assertTrue(p.tasks['pdfLatex.ex_ample'] instanceof PdfLatexTask)
+    assertTrue(p.tasks['cleanLatex.ex_ample'] instanceof CleanLatexTask)
+    assertTaskDependsOn('pdfLatex', 'pdfLatex.ex_ample')
+    assertTaskDependsOn('cleanLatex', 'cleanLatex.ex_ample')
+  }
+  
+  @Test
+  void tex_addsSimpleArtifact_texInSubfolder() {
+    // add new artifact by tex name
+    LatexArtifact obj = extension.tex(tex: 'subdir/example.tex')
+    // artifact is set properly
+    assertArtifactProps(obj, name: 'subdir/example', nameNoPath: 'subdir_example', texName: 'subdir/example.tex', pdfName: 'subdir/example.pdf')
+    // tasks are added
+    assertTrue(p.tasks['pdfLatex.subdir_example'] instanceof PdfLatexTask)
+    assertTrue(p.tasks['cleanLatex.subdir_example'] instanceof CleanLatexTask)
+    assertTaskDependsOn('pdfLatex', 'pdfLatex.subdir_example')
+    assertTaskDependsOn('cleanLatex', 'cleanLatex.subdir_example')
+  }
+  
+  @Test
   void tex_addsArtifactCustomPdfName() {
     // add new artifact by tex name
     LatexArtifact obj = extension.tex(tex: 'example.tex', pdf: 'customOutput.pdf')
     // artifact is set properly
-    assertArtifactProps(obj, name: 'example', texName: 'example.tex', pdfName: 'customOutput.pdf')
+    assertArtifactProps(obj, name: 'example', nameNoPath: 'example', texName: 'example.tex', pdfName: 'customOutput.pdf')
   }
   
   @Test
@@ -70,7 +105,7 @@ class LatexExtensionTest {
     LatexArtifact dep = extension.tex(tex: 'dependent.tex')
     LatexArtifact obj = extension.tex(tex: 'example.tex', dependsOn:['dependent.tex'])
     // artifact is set properly
-    assertArtifactProps(obj, name: 'example', texName: 'example.tex', pdfName: 'example.pdf', dependsOn: [dep])
+    assertArtifactProps(obj, name: 'example', nameNoPath: 'example', texName: 'example.tex', pdfName: 'example.pdf', dependsOn: [dep])
     // tasks are added and dependent
     assertTrue(p.tasks['pdfLatex.dependent'] instanceof PdfLatexTask)
     assertTrue(p.tasks['pdfLatex.example'] instanceof PdfLatexTask)
@@ -82,7 +117,7 @@ class LatexExtensionTest {
     // add new artifact by tex name
     LatexArtifact obj = extension.tex(tex: 'example.tex', bib: 'refs.bib')
     // artifact is set properly
-    assertArtifactProps(obj, name: 'example', texName: 'example.tex', pdfName: 'example.pdf', bibName: 'refs.bib')
+    assertArtifactProps(obj, name: 'example', nameNoPath: 'example', texName: 'example.tex', pdfName: 'example.pdf', bibName: 'refs.bib')
     // tasks are added and dependent
     assertTrue(p.tasks['pdfLatex.example'] instanceof PdfLatexTask)
     assertTrue(p.tasks['bibTex.example'] instanceof BibTexTask)
@@ -94,7 +129,7 @@ class LatexExtensionTest {
     // add new artifact by tex name
     LatexArtifact obj = extension.tex(tex: 'example.tex', img:['image.svg'])
     // artifact is set properly
-    assertArtifactProps(obj, name: 'example', texName: 'example.tex', pdfName: 'example.pdf', img:['image.svg'])
+    assertArtifactProps(obj, name: 'example', nameNoPath: 'example', texName: 'example.tex', pdfName: 'example.pdf', img:['image.svg'])
     // tasks are added and dependent
     assertTrue(p.tasks['pdfLatex.example'] instanceof PdfLatexTask)
     assertTrue(p.tasks['inkscape.example'] instanceof InkscapeTask)
@@ -106,7 +141,7 @@ class LatexExtensionTest {
     // add new artifact by tex name
     LatexArtifact obj = extension.tex(tex: 'example.tex', aux: ['auxFile.jpg'])
     // artifact is set properly
-    assertArtifactProps(obj, name: 'example', texName: 'example.tex', pdfName: 'example.pdf', aux: ['auxFile.jpg'])
+    assertArtifactProps(obj, name: 'example', nameNoPath: 'example', texName: 'example.tex', pdfName: 'example.pdf', aux: ['auxFile.jpg'])
   }
   
   @Test
@@ -114,7 +149,7 @@ class LatexExtensionTest {
     // add new artifact by tex name
     LatexArtifact obj = extension.tex(tex: 'example.tex', extraArgs: '--extra-arg')
     // artifact is set properly
-    assertArtifactProps(obj, name: 'example', texName: 'example.tex', pdfName: 'example.pdf', extraArgs: '--extra-arg')
+    assertArtifactProps(obj, name: 'example', nameNoPath: 'example', texName: 'example.tex', pdfName: 'example.pdf', extraArgs: '--extra-arg')
   }
   
   // Auxiliary methods
@@ -126,16 +161,17 @@ class LatexExtensionTest {
   private void assertArtifactProps(Map customArtifactProps, LatexArtifact obj) {
     Map props = defaultArtifactProps + customArtifactProps
     
-    assertEquals(obj.name, props.name)
-    assertEquals(obj.tex.name, props.texName)
-    assertEquals(obj.pdf.name, props.pdfName)
-    assertEquals(obj.dependsOn, props.dependsOn)
-    assertEquals(obj.extraArgs, props.extraArgs)
+    assertEquals(props.name, obj.name)
+    assertEquals(props.nameNoPath, obj.nameNoPath)
+    assertEquals(p.file(props.texName), obj.tex)
+    assertEquals(p.file(props.pdfName), obj.pdf)
+    assertEquals(props.dependsOn, obj.dependsOn)
+    assertEquals(props.extraArgs, obj.extraArgs)
     
     if (!props.bibName) {
       assertNull(obj.bib)
     } else {
-      assertEquals(obj.bib.name, props.bibName)
+      assertEquals(p.file(props.bibName), obj.bib)
     }
     
     if (!props.img) {

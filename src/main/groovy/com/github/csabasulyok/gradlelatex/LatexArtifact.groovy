@@ -20,6 +20,12 @@ class LatexArtifact {
   String name
   
   /**
+   * Name of artifact used for auxiliary files. Same as name,
+   * but does not contain whitespaces, folder changes, etc.
+   */
+  String nameNoPath
+  
+  /**
    * Represents tex file which is used to call bibtex, pdflatex
    * Must be set.
    */
@@ -60,4 +66,10 @@ class LatexArtifact {
    * Extra arguments to be passed to pdflatex when building this artifact.
    */
   String extraArgs
+  
+  @Override
+  String toString() {
+    "LatexArtifact [name=" + name + ", nameNoPath=" + nameNoPath + ", tex=" + tex + ", bib=" + bib + ", pdf=" + pdf + ", dependsOn=" + dependsOn +
+        ", img=" + img + ", aux=" + aux + ", extraArgs=" + extraArgs + "]"
+  }
 }

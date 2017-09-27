@@ -26,7 +26,7 @@ class LatexUtils {
    * @param obj Any Latex artifact with the tex property set.
    */
   void pdfLatex(LatexArtifact obj) {
-    LOG.quiet "Executing pdflatex for $obj.name"
+    LOG.quiet "Executing pdflatex for $obj.nameNoPath"
     
     p.ant.exec(executable: 'pdflatex', dir: p.projectDir, failonerror: true) {
       arg(value: "-output-directory=${p.latex.auxDir}")
@@ -46,7 +46,7 @@ class LatexUtils {
    * @param obj Any Latex artifact with the tex and bib properties set.
    */
   void bibTex(LatexArtifact obj) {
-    LOG.quiet "Executing bibtex for $obj.name"
+    LOG.quiet "Executing bibtex for $obj.nameNoPath"
     p.ant.copy(file: obj.bib, todir:p.latex.auxDir, overwrite:true, force:true)
     p.ant.exec(executable: 'bibtex', dir: p.latex.auxDir, failonerror: true) {
       arg(value: obj.name)
