@@ -15,6 +15,7 @@ class LatexExtensionTest {
     texName : '',
     pdfName : '',
     bibName : null,
+    bibCommand: 'bibtex',
     dependsOn : [],
     img : null,
     aux : null,
@@ -125,6 +126,18 @@ class LatexExtensionTest {
   }
   
   @Test
+  void tex_addsArtifactWithBib_biber() {
+    // add new artifact by tex name
+    LatexArtifact obj = extension.tex(tex: 'example.tex', bib: 'refs.bib', bibCommand: 'biber')
+    // artifact is set properly
+    assertArtifactProps(obj, name: 'example', nameNoPath: 'example', texName: 'example.tex', pdfName: 'example.pdf', bibName: 'refs.bib', bibCommand: 'biber')
+    // tasks are added and dependent
+    assertTrue(p.tasks['pdfLatex.example'] instanceof PdfLatexTask)
+    assertTrue(p.tasks['bibTex.example'] instanceof BibTexTask)
+    assertTaskDependsOn('pdfLatex.example', 'bibTex.example')
+  }
+  
+  @Test
   void tex_addsArtifactWithImg() {
     // add new artifact by tex name
     LatexArtifact obj = extension.tex(tex: 'example.tex', img:['image.svg'])
@@ -163,6 +176,7 @@ class LatexExtensionTest {
     
     assertEquals(props.name, obj.name)
     assertEquals(props.nameNoPath, obj.nameNoPath)
+    assertEquals(props.bibCommand, obj.bibCommand)
     assertEquals(p.file(props.texName), obj.tex)
     assertEquals(p.file(props.pdfName), obj.pdf)
     assertEquals(props.dependsOn, obj.dependsOn)

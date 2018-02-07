@@ -109,6 +109,8 @@ class LatexExtension {
     obj.pdf = p.file(args.pdf ?: "${name}.pdf")
     // bib file optional
     obj.bib = args.bib ? p.file(args.bib) : null
+    // bib command - optional, by default "bibtex"
+    obj.bibCommand = args.bibCommand ?: 'bibtex'
     
     // build dependencies
     // find already existing LatexArtifact instances instead of holding just names

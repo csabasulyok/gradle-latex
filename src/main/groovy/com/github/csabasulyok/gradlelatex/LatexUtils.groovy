@@ -46,9 +46,9 @@ class LatexUtils {
    * @param obj Any Latex artifact with the tex and bib properties set.
    */
   void bibTex(LatexArtifact obj) {
-    LOG.quiet "Executing bibtex for $obj.nameNoPath"
+    LOG.quiet "Executing $obj.bibCommand for $obj.nameNoPath"
     p.ant.copy(file: obj.bib, todir:p.latex.auxDir, overwrite:true, force:true)
-    p.ant.exec(executable: 'bibtex', dir: p.latex.auxDir, failonerror: true) {
+    p.ant.exec(executable: obj.bibCommand, dir: p.latex.auxDir, failonerror: true) {
       arg(value: obj.name)
     }
   }

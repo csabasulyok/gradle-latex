@@ -32,6 +32,12 @@ class BibTexTask extends DefaultTask {
    */
   @OutputFile
   File bbl
+  
+  /**
+   * Command to use for the bibliography generation.
+   * By default, 'bibtex', can be changed to 'biber'
+   */
+  String bibCommand = 'bibtex'
 
   
   //===============================
@@ -43,7 +49,7 @@ class BibTexTask extends DefaultTask {
   }
   
   String getDescription() {
-    "Uses bibtex to compile references of ${obj.tex.name}"
+    "Uses bibtex or biber to compile references of ${obj.tex.name}"
   }
 
   
@@ -70,6 +76,7 @@ class BibTexTask extends DefaultTask {
   void setObj(LatexArtifact obj) {
     this.obj = obj
     this.bib = obj.bib
+    this.bibCommand = obj.bibCommand
     this.bbl = new File(project.latex.auxDir, "${obj.name}.bbl")
   }
 }

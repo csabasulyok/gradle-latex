@@ -32,9 +32,15 @@ class LatexArtifact {
   File tex
   
   /**
-   * Represents bib file used to call bibtex.
+   * Represents bib file used to call bibtex/biber.
    */
   File bib
+  
+  /**
+   * Command string to generate bbl file from bib.
+   * By default 'bibtex', but 'biber' may be used instead. 
+   */
+  String bibCommand
   
   /**
    * Represents output pdf file.
@@ -69,7 +75,7 @@ class LatexArtifact {
   
   @Override
   String toString() {
-    "LatexArtifact [name=" + name + ", nameNoPath=" + nameNoPath + ", tex=" + tex + ", bib=" + bib + ", pdf=" + pdf + ", dependsOn=" + dependsOn +
-        ", img=" + img + ", aux=" + aux + ", extraArgs=" + extraArgs + "]"
+    "LatexArtifact [name=" + name + ", nameNoPath=" + nameNoPath + ", tex=" + tex + ", bib=" + bib + ", bibCommand=" + bibCommand +
+        ", pdf=" + pdf + ", dependsOn=" + dependsOn + ", img=" + img + ", aux=" + aux + ", extraArgs=" + extraArgs + "]"
   }
 }

@@ -14,6 +14,9 @@ buildscript {
 apply plugin: 'latex'
 
 latex {
-    // connect document to bib file
+    // connect document to bib file and use bibtex
     tex(tex: 'document.tex', bib: 'references.bib', pdf: 'output.pdf')
+    
+    // connect document to bib file and use biber
+    tex(tex: 'document_biber.tex', bib: 'references.bib', bibCommand: 'biber', pdf: 'output_biber.pdf')
 }
