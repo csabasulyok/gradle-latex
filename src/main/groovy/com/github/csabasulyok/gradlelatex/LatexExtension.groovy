@@ -225,13 +225,18 @@ class LatexExtension {
    * @param obj The basis artifact of the new task.
    */
   private void addInkscapeTask(LatexArtifact obj) {
-    LOG.info "Dynamically adding task 'inkscape.${obj.name}'"
+    LOG.info "Dynamically adding task 'inkscape.${obj.nameNoPath}'"
     
     // create new task and set its properties using the artifact
-    InkscapeTask inkscapeTask = p.task("inkscape.${obj.name}", type: InkscapeTask, overwrite: true)
+    InkscapeTask inkscapeTask = p.task("inkscape.${obj.nameNoPath}", type: InkscapeTask, overwrite: true)
     inkscapeTask.setObj(obj)
     
     // add new task as dependency of associated pdfLatex task
-    p.tasks["pdfLatex.${obj.name}"].dependsOn inkscapeTask
+    p.tasks["pdfLatex.${obj.nameNoPath}"].dependsOn inkscapeTask
+    // if a bibtex task exists, add new task as dependency
+    if (p.tasks.findByPath("bibTex.${obj.nameNoPath}")) {
+      LOG.info "Making sure inkscape is called before bibtex"
+      p.tasks["bibTex.${obj.nameNoPath}"].dependsOn inkscapeTask
+    }
   }
 }
