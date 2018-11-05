@@ -48,6 +48,12 @@ class LatexArtifact {
   File pdf
   
   /**
+   * Command string to generate PDF file.
+   * By default 'pdflatex', but 'xelatex' may be used instead.
+   */
+  String pdfCommand
+  
+  /**
    * Collection of dependencies which have to be compiled
    * in order for this one to work (e.g. used with \input). 
    */
@@ -76,6 +82,7 @@ class LatexArtifact {
   @Override
   String toString() {
     "LatexArtifact [name=" + name + ", nameNoPath=" + nameNoPath + ", tex=" + tex + ", bib=" + bib + ", bibCommand=" + bibCommand +
-        ", pdf=" + pdf + ", dependsOn=" + dependsOn + ", img=" + img + ", aux=" + aux + ", extraArgs=" + extraArgs + "]"
+        ", pdf=" + pdf + ", pdfCommand=" + pdfCommand + ", dependsOn=" + dependsOn + ", img=" + img + ", aux=" + aux +
+        ", extraArgs=" + extraArgs + "]"
   }
 }

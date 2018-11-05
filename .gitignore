@@ -10,6 +10,7 @@
 /.settings
 /.classpath
 /.project
+userHome
 
 # resources from VS Code
 /.vscode

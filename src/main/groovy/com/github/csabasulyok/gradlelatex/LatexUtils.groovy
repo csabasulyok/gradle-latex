@@ -20,7 +20,7 @@ class LatexUtils {
   }
   
   /**
-   * Execute pdflatex command for given latex artifact.
+   * Execute latex compilation command for given latex artifact.
    * All auxiliary files(aux, out, log) and the pdf output is stored in an auxiliary directory.
    * 
    * @param obj Any Latex artifact with the tex property set.
@@ -28,7 +28,7 @@ class LatexUtils {
   void pdfLatex(LatexArtifact obj) {
     LOG.quiet "Executing pdflatex for $obj.nameNoPath"
     
-    p.ant.exec(executable: 'pdflatex', dir: p.projectDir, failonerror: true) {
+    p.ant.exec(executable: obj.pdfCommand, dir: p.projectDir, failonerror: true) {
       arg(value: "-output-directory=${p.latex.auxDir}")
       if (p.latex.quiet) {
         arg(value: '-quiet')

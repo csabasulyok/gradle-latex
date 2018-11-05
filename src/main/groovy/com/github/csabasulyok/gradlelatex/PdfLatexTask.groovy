@@ -48,7 +48,7 @@ class PdfLatexTask extends DefaultTask {
   }
 
   String getDescription() {
-    "Uses pdflatex to compile ${obj.tex.name} into ${obj.pdf.name}"
+    "Uses ${obj.pdfCommand} to compile ${obj.tex.name} into ${obj.pdf.name}"
   }
 
 

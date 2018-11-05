@@ -107,6 +107,8 @@ class LatexExtension {
     
     // PDF either given, or same as TeX file with different extension
     obj.pdf = p.file(args.pdf ?: "${name}.pdf")
+    // command to create PDF, by default "pdflatex"
+    obj.pdfCommand = args.pdfCommand ?: 'pdflatex'
     // bib file optional
     obj.bib = args.bib ? p.file(args.bib) : null
     // bib command - optional, by default "bibtex"
