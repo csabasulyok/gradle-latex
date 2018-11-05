@@ -7,9 +7,10 @@
 
 # resources from eclipse
 /bin
-/.settings
-/.classpath
-/.project
+.settings
+.classpath
+.project
+.pydevproject
 userHome
 
 # resources from VS Code
@@ -17,3 +18,11 @@ userHome
 
 # resources from latex
 _minted-*
+*.log
+*.aux
+*.toc
+*.nav
+*.out
+*.snm
+*.fls
+*.bbl
