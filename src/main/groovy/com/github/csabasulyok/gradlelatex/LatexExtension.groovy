@@ -225,5 +225,9 @@ class LatexExtension {
     
     // add new task as dependency of associated pdfLatex task
     p.tasks["pdfLatex.${obj.name}"].dependsOn inkscapeTask
+    // inkscape must run before bibtex, so also add it before that
+    if (p.tasks.findByName("bibTex.${obj.name}")) {
+      p.tasks["bibTex.${obj.name}"].dependsOn inkscapeTask
+    }
   }
 }
