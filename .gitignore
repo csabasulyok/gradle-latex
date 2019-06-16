@@ -13,3 +13,9 @@
 
 # resources from VS Code
 /.vscode
+
+# resources from IDEA
+/.idea/
+*.iml
+*.ipr
+*.iws
