@@ -26,3 +26,9 @@ _minted-*
 *.snm
 *.fls
 *.bbl
+
+# resources from IDEA
+/.idea/
+*.iml
+*.ipr
+*.iws
