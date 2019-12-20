@@ -1,6 +1,7 @@
 package com.github.csabasulyok.gradlelatex
 
 import org.gradle.api.Project
+import org.gradle.api.tasks.Copy
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -136,6 +137,9 @@ class LatexExtension {
     if (args.img) {
       addInkscapeTask(obj)
     }
+    if (args.aux) {
+      addCopyAuxTask(obj)
+    }
     
     // save artifact
     objs[nameNoPath] = obj
@@ -214,6 +218,31 @@ class LatexExtension {
     
     // add new task as dependency of associated pdfLatex task
     p.tasks["pdfLatex.${obj.nameNoPath}"].dependsOn bibTexTask
+  }
+
+  /**
+   * Wire new copyAux task into workflow based on a LatexArtifact.
+   * The task copies the aux files into the temp folder.
+   *
+   * The new task is then inserted as a dependency of the associated "pdfLatex.texfile" task.
+   *
+   * @param obj The basis artifact of the new task.
+   */
+  private void addCopyAuxTask(LatexArtifact obj) {
+    LOG.info "Dynamically adding task 'copyAux.${obj.name}'"
+
+    // create new task and set its properties using the artifact
+    Copy copyAuxTask = p.task("copyAux.${obj.name}", type: Copy, overwrite: true) {
+      from obj.aux
+      into p.latex.auxDir
+    }
+
+    // add new task as dependency of associated pdfLatex task
+    p.tasks["pdfLatex.${obj.name}"].dependsOn copyAuxTask
+    // copy must run before bibtex, so also add it before that
+    if (p.tasks.findByName("bibTex.${obj.name}")) {
+      p.tasks["bibTex.${obj.name}"].dependsOn copyAuxTask
+    }
   }
   
   /**
