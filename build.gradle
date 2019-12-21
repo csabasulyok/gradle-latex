@@ -1,6 +1,6 @@
 // project is Maven-style
 apply plugin: 'groovy'
-apply plugin: 'maven'
+apply plugin: 'maven-publish'
 
 // eclipse project generation support
 apply plugin: 'eclipse'
@@ -64,6 +64,14 @@ artifacts {
   archives tasks.sources
   archives tasks.testJar
   archives tasks.packageJavadoc
+}
+
+publishing {
+  publications {
+    mavenJava(MavenPublication) {
+      from components.java
+    }
+  }
 }
 
 
