@@ -1,5 +1,3 @@
-// include latex plugin on classpath
-
 buildscript {
     repositories {
         mavenLocal()
@@ -13,9 +11,7 @@ buildscript {
 apply plugin: 'latex'
 
 latex {
-    tex 'dependent.tex'
+    // overwrite pdfCommand parameter
     tex(tex: 'document.tex',
-        bib: 'references.bib',
-        dependsOn: ['dependent.tex'],
-        aux: ['auxiliary.tex', 'img'])
+        pdfCommand: 'lualatex')
 }

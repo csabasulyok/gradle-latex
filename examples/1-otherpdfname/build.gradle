@@ -10,12 +10,11 @@ buildscript {
     }
 }
 
+
 apply plugin: 'latex'
 
 latex {
-    tex 'dependent.tex'
-    tex(tex: 'document.tex',
-        bib: 'references.bib',
-        dependsOn: ['dependent.tex'],
-        aux: ['auxiliary.tex', 'img'])
+
+    // custom file name
+    tex(tex:'document.tex', pdf:'customOutput.pdf')
 }
