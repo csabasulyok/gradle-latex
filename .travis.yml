@@ -1,7 +1,7 @@
 language: java
 
 # test with java 9 support
-jdk: oraclejdk11
+jdk: openjdk11
 
 # using the right gradle version
 before_install: gradle -b wrapper.gradle wrapper
