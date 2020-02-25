@@ -1,4 +1,4 @@
 wrapper {
-  gradleVersion = '11.0.5'
+  gradleVersion = '6.1-rc-1'
   distributionType = Wrapper.DistributionType.BIN
 }
