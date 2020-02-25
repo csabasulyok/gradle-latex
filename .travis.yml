@@ -1,7 +1,10 @@
 language: java
 
-# only java 8 supported for now
-jdk: oraclejdk8
+# test with java 9 support
+jdk: oraclejdk9
+
+# using the right gradle version
+before_install: gradle -b wrapper .gradle wrapper
 
 # list dependencies in the install step.
 # this forces the check that all dependencies are available
