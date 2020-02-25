@@ -66,10 +66,10 @@ task packageJavadoc(type: Jar, group: 'Build', description: 'Packages output of 
 //  archives tasks.testJar
 //  archives tasks.packageJavadoc
 //}
-java {
-      withJavadocJar()
-      withSourcesJar()
-}
+//java {
+//      withJavadocJar()
+//      withSourcesJar()
+//}
 /**
  * configure upload of the artifacts
  */
