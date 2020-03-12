@@ -61,15 +61,15 @@ task packageJavadoc(type: Jar, group: 'Build', description: 'Packages output of 
   from tasks.groovydoc.destinationDir
 }
 
-//artifacts {
-//  archives tasks.sources
-//  archives tasks.testJar
-//  archives tasks.packageJavadoc
-//}
-//java {
-//      withJavadocJar()
-//      withSourcesJar()
-//}
+artifacts {
+  archives tasks.sources
+  archives tasks.testJar
+  archives tasks.packageJavadoc
+}
+java {
+      withJavadocJar()
+      withSourcesJar()
+}
 /**
  * configure upload of the artifacts
  */
