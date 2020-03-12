@@ -4,12 +4,7 @@ language: java
 jdk: openjdk11
 
 # using the right gradle version
-before_install: 
-- wget https://services.gradle.org/distributions/gradle-6.2.1-bin.zip 
-- unzip -qq gradle-6.2.1-bin.zip
-- export GRADLE_HOME=$PWD/gradle-6.2.1
-- export PATH=$GRADLE_HOME/bin:$PATH
-- gradle -v
+before_install: gradle -b wrapper.gradle wrapper
 
 # list dependencies in the install step.
 # this forces the check that all dependencies are available
