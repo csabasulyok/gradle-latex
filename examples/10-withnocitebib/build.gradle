@@ -1,0 +1,19 @@
+// include latex plugin on classpath
+
+buildscript {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+    }
+    dependencies {
+        classpath group: 'com.github.csabasulyok', name: 'gradle-latex-boltzmann', version: 'GRADLE-UPDATE'
+    }
+}
+
+
+apply plugin: 'latex'
+
+latex {
+    // connect document to bib file and use biber
+    tex(tex: 'document_biber.tex', bib: 'references.bib', bibCommand: 'biber', pdf: 'output_biber.pdf')
+}
