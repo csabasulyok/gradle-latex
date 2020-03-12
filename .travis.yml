@@ -4,7 +4,9 @@ language: java
 jdk: openjdk11
 
 # using the right gradle version
-before_install: gradle -b wrapper.gradle wrapper
+before_install: 
+  - gradle -b wrapper.gradle wrapper
+  - gradle -v
 
 # list dependencies in the install step.
 # this forces the check that all dependencies are available
