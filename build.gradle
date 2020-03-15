@@ -9,7 +9,7 @@ plugins {
 // identifiers
 group = 'com.github.csabasulyok'
 version = '2.0-SNAPSHOT'
-
+ext.isReleaseVersion = !version.endsWith("SNAPSHOT")
 
 dependencies {
   // make this a gradle plugin project
