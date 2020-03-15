@@ -1,7 +1,10 @@
 language: java
 
 # test with java 9 support
-jdk: openjdk11
+jdk: 
+- openjdk11
+- openjdk12
+- openjdk13
 
 # using the right gradle version
 before_install: 
