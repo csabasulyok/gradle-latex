@@ -4,8 +4,6 @@
 # resources from gradle
 .gradle
 /build
-gradlew
-gradlew.bat
 
 # resources from eclipse
 /bin
