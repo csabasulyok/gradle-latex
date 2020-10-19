@@ -2,7 +2,6 @@ language: java
 
 # test with java 9 support
 jdk: 
-- oraclejdk8
 - oraclejdk9
 - openjdk8
 - openjdk9
