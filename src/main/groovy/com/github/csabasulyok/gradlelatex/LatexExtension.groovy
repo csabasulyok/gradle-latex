@@ -165,7 +165,7 @@ class LatexExtension {
     LOG.info "Dynamically adding task 'pdfLatex.${obj.nameNoPath}'"
     
     // create new task and set its properties using the artifact
-    PdfLatexTask pdfLatexTask = p.task("pdfLatex.${obj.nameNoPath}", type: PdfLatexTask, overwrite: true)
+    PdfLatexTask pdfLatexTask = p.task("pdfLatex.${obj.nameNoPath}", type: PdfLatexTask)
     pdfLatexTask.setObj(obj)
     
     // add dependency to all already existing pdfLatex tasks of dependent artifacts
@@ -192,7 +192,7 @@ class LatexExtension {
     LOG.info "Dynamically adding task 'cleanLatex.${obj.nameNoPath}'"
     
     // create new task and set its properties using the artifact
-    CleanLatexTask cleanLatexTask = p.task("cleanLatex.${obj.nameNoPath}", type: CleanLatexTask, overwrite: true)
+    CleanLatexTask cleanLatexTask = p.task("cleanLatex.${obj.nameNoPath}", type: CleanLatexTask)
     cleanLatexTask.setObj(obj)
     
     // add new task as dependency of main task
