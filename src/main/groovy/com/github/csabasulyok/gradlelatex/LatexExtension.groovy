@@ -137,7 +137,7 @@ class LatexExtension {
     if (args.img) {
       addInkscapeTask(obj)
     }
-    if (args.aux) {
+    if (args.aux && objs[name]) {
       addCopyAuxTask(objs[name])
     }
     
@@ -165,7 +165,7 @@ class LatexExtension {
     LOG.info "Dynamically adding task 'pdfLatex.${obj.nameNoPath}'"
     
     // create new task and set its properties using the artifact
-    PdfLatexTask pdfLatexTask = p.task("pdfLatex.${obj.nameNoPath}", type: PdfLatexTask, overwrite: true)
+    PdfLatexTask pdfLatexTask = p.task("pdfLatex.${obj.nameNoPath}", type: PdfLatexTask)
     pdfLatexTask.setObj(obj)
     
     // add dependency to all already existing pdfLatex tasks of dependent artifacts
@@ -192,7 +192,7 @@ class LatexExtension {
     LOG.info "Dynamically adding task 'cleanLatex.${obj.nameNoPath}'"
     
     // create new task and set its properties using the artifact
-    CleanLatexTask cleanLatexTask = p.task("cleanLatex.${obj.nameNoPath}", type: CleanLatexTask, overwrite: true)
+    CleanLatexTask cleanLatexTask = p.task("cleanLatex.${obj.nameNoPath}", type: CleanLatexTask)
     cleanLatexTask.setObj(obj)
     
     // add new task as dependency of main task
@@ -213,7 +213,7 @@ class LatexExtension {
     LOG.info "Dynamically adding task 'bibTex.${obj.nameNoPath}'"
     
     // create new task and set its properties using the artifact
-    BibTexTask bibTexTask = p.task("bibTex.${obj.nameNoPath}", type: BibTexTask, overwrite: true)
+    BibTexTask bibTexTask = p.task("bibTex.${obj.nameNoPath}", type: BibTexTask)
     bibTexTask.setObj(obj)
     
     // add new task as dependency of associated pdfLatex task
@@ -232,7 +232,7 @@ class LatexExtension {
     LOG.info "Dynamically adding task 'copyAux.${obj.name}'"
 
     // create new task and set its properties using the artifact
-    Copy copyAuxTask = p.task("copyAux.${obj.name}", type: Copy, overwrite: true) {
+    Copy copyAuxTask = p.task("copyAux.${obj.name}", type: Copy) {
       from obj.aux
       into p.latex.auxDir
     }
@@ -259,7 +259,7 @@ class LatexExtension {
     LOG.info "Dynamically adding task 'inkscape.${obj.nameNoPath}'"
     
     // create new task and set its properties using the artifact
-    InkscapeTask inkscapeTask = p.task("inkscape.${obj.nameNoPath}", type: InkscapeTask, overwrite: true)
+    InkscapeTask inkscapeTask = p.task("inkscape.${obj.nameNoPath}", type: InkscapeTask)
     inkscapeTask.setObj(obj)
     
     // add new task as dependency of associated pdfLatex task
